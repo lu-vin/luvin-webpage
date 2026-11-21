@@ -12,5 +12,9 @@
   // las reemplaza por las de este archivo: así se perdió SMTP_USER el 21 Nov 2026 y el formulario
   // respondió 503). Los secretos (tipo Secret) nunca se borran con un deploy.
   "keep_vars": true,
+  // Solo el dominio propio: sin la URL luvin-web.<cuenta>.workers.dev ni URLs de preview por versión. Se
+  // apagaron en el panel, pero cada deploy los volvía a encender porque este archivo no lo decía.
+  "workers_dev": false,
+  "preview_urls": false,
   "observability": { "enabled": true }
 }
