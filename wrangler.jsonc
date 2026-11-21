@@ -7,5 +7,9 @@
   "compatibility_date": "2026-11-10",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": { "binding": "ASSETS", "directory": "./dist" },
+  // Un deploy no borra las variables de texto creadas en el panel de Cloudflare (sin esto, wrangler
+  // las reemplaza por las de este archivo: así se perdió SMTP_USER el 21 Nov 2026 y el formulario
+  // respondió 503). Los secretos (tipo Secret) nunca se borran con un deploy.
+  "keep_vars": true,
   "observability": { "enabled": true }
 }
