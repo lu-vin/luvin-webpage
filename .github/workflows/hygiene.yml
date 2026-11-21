@@ -1,0 +1,15 @@
+# Cada lunes, un issue con las ramas de más de 2 días (lu-vin/.github, branches.yml).
+name: Hygiene
+
+on:
+  schedule:
+    - cron: '0 13 * * 1' # lunes, 8:00 (UTC-5)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  branches:
+    uses: lu-vin/.github/.github/workflows/branches.yml@main
