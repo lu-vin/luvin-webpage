@@ -1,6 +1,7 @@
 // Configuración de Cloudflare Workers. El adaptador de Astro completa el resto al compilar.
-// Los secretos (RESEND_API_KEY, WAITLIST_FROM, WAITLIST_NOTIFY_TO) no van aquí:
-// en local van en .dev.vars y en producción en el panel de Cloudflare (Settings → Variables and Secrets).
+// Las variables del formulario (SMTP_USER, SMTP_PASS y las opcionales SMTP_HOST, SMTP_PORT, WAITLIST_*) no
+// van aquí: en local van en .dev.vars y en producción en el panel de Cloudflare (Settings → Variables and
+// Secrets), como Secret.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "luvin-web",
