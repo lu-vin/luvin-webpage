@@ -3,6 +3,8 @@ import '@fontsource-variable/inter/index.css'
 import '../styles/global.css'
 import Wordmark from '../components/Wordmark.astro'
 import { strings, type Lang } from '../i18n/strings'
+import { commerce } from '../i18n/commerce'
+import { commercePages, commerceVisible } from '../lib/commerce'
 
 interface Props {
   lang: Lang
@@ -85,7 +87,18 @@ const links = [
           <Wordmark size={22} />
         </div>
         <p class="footer-tagline">{t.footer.tagline}</p>
+        {
+          // Precios y páginas legales: solo con `npm run dev` hasta que se abra la venta (src/lib/commerce.ts).
+          commerceVisible && (
+            <nav class="footer-links" aria-label={commerce[lang].footer.terms}>
+              {commercePages.map((page) => (
+                <a href={`${home}${page}/`}>{commerce[lang].footer[page]}</a>
+              ))}
+            </nav>
+          )
+        }
         <p class="fine">© 2026 Luvin · {t.footer.specs}</p>
+        {commerceVisible && <p class="fine">{commerce[lang].footer.seller}</p>}
       </div>
     </footer>
     <script>

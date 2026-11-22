@@ -22,6 +22,7 @@ npm run preview   # sirve dist/ para revisarlo
 | Colores y estilos | `src/styles/global.css` |
 | Logo, teaser, capturas, iconos | `public/` |
 | Formulario de la lista de espera (servidor) | `src/pages/api/waitlist.ts` |
+| Precios y páginas legales (solo en desarrollo) | `src/pages/[page].astro`, `src/pages/es/[page].astro`, `src/components/Pricing.astro`, `src/components/LegalPage.astro`, `src/i18n/commerce.ts`, `src/lib/commerce.ts` |
 | Correo de bienvenida y aviso al equipo | `src/lib/waitlist-email.ts` (usa los textos de `strings.ts`, clave `email`) |
 
 Las imágenes vienen de los otros repos:
@@ -29,6 +30,14 @@ Las imágenes vienen de los otros repos:
 - El video de la portada (`public/media/promo.mp4`, con su póster `promo-poster.jpg`) es `marketing/promo2/luvin-promo.mp4` del repo de Luvin (2:02, en inglés, para los dos idiomas), comprimido para la web: `ffmpeg -i luvin-promo.mp4 -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart promo.mp4`. Cloudflare no acepta archivos de más de 25 MB.
 - La animación A→B→C (`chain-dark.svg`) es la de `docs/readme/` del repo de Luvin.
 - Las capturas y los videos cortos de la app (`public/media/app/<idioma>/`) son los de la documentación (`luvin-docs/public/media/<idioma>/`), que se rehacen con `npm run media` allá. Las del correo (`public/media/email/`) son las mismas, en JPG de 1072 px de ancho.
+
+## Precios y páginas legales (solo en desarrollo)
+
+La página de precios y las páginas legales que Paddle revisa antes de aprobar el dominio (`/pricing/`, `/terms/`, `/license/`, `/refunds/`, `/privacy/` y sus versiones en `/es/`) **solo existen con `npm run dev`**: el build de producción no las genera y el pie no las enlaza. Se publican el día que se abra la venta, cambiando `commerceVisible` a `true` en `src/lib/commerce.ts`.
+
+- Textos: `src/i18n/commerce.ts` (inglés y español). Deben coincidir con el business case `subscription-architecture/0001` de luvin-architecture y con lo que haga la app ese día.
+- Los textos legales son un borrador: revisarlos con un abogado antes de publicarlos.
+- Antes de publicar: crear el correo `soporte@lu-vin.com` y quitar "próximamente" de lo que ya exista en la app.
 
 Todo lo que el sitio dice de Luvin tiene que existir en la app. Los textos usan las mismas palabras que la app: workflow (nunca "journey"), inputs, casos.
 
