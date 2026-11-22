@@ -1,0 +1,27 @@
+---
+// Una página legal (términos, licencia, reembolsos o privacidad), con sus secciones.
+// Solo existe con `npm run dev` hasta que se abra la venta (ver src/lib/commerce.ts).
+import type { LegalDoc } from '../i18n/commerce'
+
+interface Props {
+  doc: LegalDoc
+}
+const { doc } = Astro.props
+---
+
+<section class="section legal-page">
+  <div class="container narrow">
+    <h1>{doc.title}</h1>
+    <p class="legal-updated">{doc.updated}</p>
+    <p class="legal-intro" set:html={doc.intro} />
+    {
+      doc.sections.map((s) => (
+        <section class="legal-section">
+          <h2>{s.title}</h2>
+          {s.paragraphs?.map((text) => <p set:html={text} />)}
+          {s.bullets && <ul>{s.bullets.map((text) => <li set:html={text} />)}</ul>}
+        </section>
+      ))
+    }
+  </div>
+</section>

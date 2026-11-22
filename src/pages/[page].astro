@@ -1,0 +1,20 @@
+---
+// Precios y páginas legales en en: /pricing/, terms/, license/, refunds/ y privacy/.
+// Solo existen con `npm run dev`: en producción getStaticPaths no devuelve ninguna (ver src/lib/commerce.ts).
+import Base from '../layouts/Base.astro'
+import Pricing from '../components/Pricing.astro'
+import LegalPage from '../components/LegalPage.astro'
+import { commerce } from '../i18n/commerce'
+import { commercePaths, type CommercePage } from '../lib/commerce'
+
+export const getStaticPaths = commercePaths
+
+const lang = 'en'
+const page = Astro.params.page as CommercePage
+const text = commerce[lang]
+const meta = page === 'pricing' ? text.pricing : text[page]
+---
+
+<Base lang={lang} path={`${page}/`} title={meta.metaTitle} description={meta.metaDescription}>
+  {page === 'pricing' ? <Pricing lang={lang} /> : <LegalPage doc={text[page]} />}
+</Base>

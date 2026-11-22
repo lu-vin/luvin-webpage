@@ -1,0 +1,95 @@
+---
+// Página de precios: Free y Pro, educación, equipos, la tabla lado a lado y preguntas.
+// Solo existe con `npm run dev` hasta que se abra la venta (ver src/lib/commerce.ts).
+import { commerce } from '../i18n/commerce'
+import type { Lang } from '../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const p = commerce[lang].pricing
+const home = lang === 'en' ? '/' : '/es/'
+---
+
+<section class="section pricing-page">
+  <div class="container">
+    <div class="center narrow">
+      <p class="kicker">{p.kicker}</p>
+      <h1 class="pricing-title">{p.title}</h1>
+      <p class="lead center">{p.lead}</p>
+    </div>
+
+    <div class="plans">
+      <article class="card plan">
+        <h2 class="plan-name">{p.free.name}</h2>
+        <p class="plan-price"><strong>{p.free.price}</strong> <span>{p.free.per}</span></p>
+        <p class="plan-blurb">{p.free.blurb}</p>
+        <a class="btn btn-ghost" href={`${home}#waitlist`}>{p.free.cta}</a>
+        <ul class="plan-items">{p.free.items.map((item) => <li set:html={item} />)}</ul>
+      </article>
+
+      <article class="card plan plan-pro">
+        <h2 class="plan-name">{p.pro.name}</h2>
+        <p class="plan-price"><strong>{p.pro.price}</strong> <span>{p.pro.per}</span></p>
+        <p class="plan-alt">{p.pro.alt}</p>
+        <p class="plan-blurb">{p.pro.blurb}</p>
+        <a class="btn btn-primary" href={`${home}#waitlist`}>{p.pro.cta}</a>
+        <p class="plan-trial">{p.pro.trial}</p>
+        <ul class="plan-items">{p.pro.items.map((item) => <li set:html={item} />)}</ul>
+        <p class="plan-soon-title">{p.pro.soonTitle}</p>
+        <ul class="plan-items plan-soon">{p.pro.soon.map((item) => <li>{item}</li>)}</ul>
+      </article>
+    </div>
+
+    <div class="plans-extra">
+      <article class="card">
+        <h3>{p.edu.title}</h3>
+        <p>{p.edu.body}</p>
+        <a class="plan-link" href="mailto:soporte@lu-vin.com">{p.edu.cta} →</a>
+      </article>
+      <article class="card">
+        <h3>{p.teams.title}</h3>
+        <p>{p.teams.body}</p>
+      </article>
+    </div>
+
+    <h2 class="pricing-subtitle center">{p.compareTitle}</h2>
+    <div class="table-wrap">
+      <table class="compare pricing-compare">
+        <thead>
+          <tr>{p.compareHead.map((h) => <th scope="col">{h}</th>)}</tr>
+        </thead>
+        <tbody>
+          {
+            p.compareRows.map(([feature, free, pro]) => (
+              <tr>
+                <th scope="row">{feature}</th>
+                <td>{free}</td>
+                <td class="us">{pro}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="faq pricing-faq">
+      <div class="faq-head">
+        <h2>{p.faqTitle}</h2>
+      </div>
+      <div class="faq-list">
+        {
+          p.faq.map((f, i) => (
+            <details open={i === 0}>
+              <summary>{f.q}</summary>
+              <p set:html={f.a} />
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="fine center">{p.note}</p>
+  </div>
+</section>

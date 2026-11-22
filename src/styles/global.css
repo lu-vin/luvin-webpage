@@ -359,3 +359,49 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .btn:hover { transform: none; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* Precios y páginas legales (solo con npm run dev hasta que se abra la venta; ver src/lib/commerce.ts) */
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 6px; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 14.5px; }
+.footer-links a:hover { color: var(--ink); }
+
+.pricing-page { padding-top: 72px; }
+.pricing-title { font-size: clamp(34px, 5vw, 56px); font-weight: 800; }
+.plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 56px; max-width: 920px; margin-inline: auto; }
+.plan { display: grid; align-content: start; gap: 4px; }
+.plan:hover { transform: none; }
+.plan-pro { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand), 0 18px 48px var(--glow); }
+.plan-pro:hover { border-color: var(--brand); }
+.plan-name { font-size: 22px; font-weight: 700; }
+.card .plan-price { margin-top: 12px; color: var(--muted); }
+.plan-price strong { font-size: 44px; font-weight: 800; color: var(--ink); letter-spacing: -0.03em; }
+.card .plan-alt { margin-top: 0; font-size: 14.5px; color: var(--faint); }
+.card .plan-blurb { margin: 8px 0 18px; }
+.card .plan-trial { margin-top: 10px; font-size: 14px; color: var(--faint); text-align: center; }
+.plan-items { display: grid; gap: 10px; margin-top: 20px; font-size: 15.5px; color: var(--muted); }
+.plan-items li { position: relative; padding-left: 26px; }
+.plan-items li::before { content: '✓'; position: absolute; left: 0; color: var(--node); font-weight: 700; }
+.plan-items strong { color: var(--ink); }
+.card .plan-soon-title { margin-top: 24px; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+.plan-soon li::before { content: '•'; color: var(--faint); }
+.plans-extra { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; max-width: 920px; margin-inline: auto; }
+.plan-link { display: inline-block; margin-top: 14px; font-weight: 600; text-decoration: none; }
+.pricing-subtitle { margin-top: 96px; font-size: clamp(26px, 3.4vw, 36px); }
+.pricing-compare { min-width: 560px; }
+.pricing-compare tbody th { width: 50%; }
+.pricing-faq { margin-top: 96px; }
+.pricing-faq .faq-head { position: static; }
+@media (max-width: 760px) {
+  .plans, .plans-extra { grid-template-columns: 1fr; }
+  .pricing-faq { grid-template-columns: 1fr; gap: 24px; }
+}
+
+.legal-page { padding-top: 72px; }
+.legal-page h1 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 800; }
+.legal-updated { margin-top: 12px; font-size: 14px; color: var(--faint); }
+.legal-intro { margin-top: 28px; font-size: 18px; color: var(--muted); }
+.legal-section { margin-top: 40px; }
+.legal-section h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.legal-section p { margin-top: 12px; color: var(--muted); }
+.legal-section ul { display: grid; gap: 10px; margin-top: 14px; padding-left: 22px; list-style: disc; color: var(--muted); }
+.legal-section strong { color: var(--ink); }
