@@ -35,6 +35,7 @@ Las imágenes vienen de los otros repos:
 
 La página de precios y las páginas legales que Paddle revisa antes de aprobar el dominio (`/pricing/`, `/terms/`, `/license/`, `/refunds/`, `/privacy/` y sus versiones en `/es/`) **solo existen con `npm run dev`**: el build de producción no las genera y el pie no las enlaza. Se publican el día que se abra la venta, cambiando `commerceVisible` a `true` en `src/lib/commerce.ts`.
 
+- **Seguro en el CI:** `npm run verify` corre `scripts/check-commerce-hidden.mjs` después del build y falla si el sitio compilado tiene alguna de esas páginas, sus enlaces o sus textos. Si falla, el sitio no se publica. Al abrir la venta se borra ese script junto con el cambio de `commerceVisible`.
 - Textos: `src/i18n/commerce.ts` (inglés y español). Deben coincidir con el business case `subscription-architecture/0001` de luvin-architecture y con lo que haga la app ese día.
 - Los textos legales son un borrador: revisarlos con un abogado antes de publicarlos.
 - Antes de publicar: crear el correo `soporte@lu-vin.com` y quitar "próximamente" de lo que ya exista en la app.

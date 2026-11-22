@@ -9,7 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "verify": "astro sync && tsc --noEmit -p ."
+    "verify": "astro sync && tsc --noEmit -p . && node scripts/check-commerce-hidden.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.4.8",
