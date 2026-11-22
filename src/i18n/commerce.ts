@@ -33,7 +33,7 @@ const en = {
     metaDescription: 'Luvin is free to start, with generous limits. Pro costs US$8 per user per month and removes every limit. Free for students and teachers.',
     kicker: 'Pricing',
     title: 'The standard is free. Pro is for serious work.',
-    lead: 'Everything you need to test chains of API calls with open standards is free. Pro removes the limits and brings Luvin to your team and your CI.',
+    lead: 'Everything you need to test chains of API calls with open standards is free. Pro removes the limits for your everyday work.',
     free: {
       name: 'Free',
       price: 'US$0',
@@ -68,8 +68,6 @@ const en = {
         'Load tests up to <strong>500 virtual users</strong> and <strong>60 minutes</strong>',
         'Email support',
       ],
-      soonTitle: 'Coming to Pro',
-      soon: ['A git interface with diffs that understand Arazzo', 'A CLI to run your workflows in CI', 'Compare contract versions and see coverage', 'Compare runs over time'],
     },
     edu: {
       title: 'Free for students and teachers',
@@ -91,8 +89,6 @@ const en = {
       ['Workflow runs with data files', '10 rows', 'Unlimited'],
       ['Load tests', '50 users, 10 min', '500 users, 60 min'],
       ['Reports in HTML and JSON', 'Yes', 'Yes'],
-      ['Git interface', 'See changes', 'Full (coming)'],
-      ['CLI for CI', '—', 'Coming'],
     ],
     faqTitle: 'Questions',
     faq: [
@@ -291,7 +287,7 @@ const es: typeof en = {
     metaDescription: 'Luvin es gratis para empezar, con límites generosos. Pro cuesta US$8 por usuario al mes y quita todos los límites. Gratis para estudiantes y docentes.',
     kicker: 'Precios',
     title: 'El estándar es gratis. Pro es para trabajar en serio.',
-    lead: 'Todo lo que necesitas para probar cadenas de APIs con estándares abiertos es gratis. Pro quita los límites y lleva Luvin a tu equipo y a tu CI.',
+    lead: 'Todo lo que necesitas para probar cadenas de APIs con estándares abiertos es gratis. Pro quita los límites para tu trabajo de todos los días.',
     free: {
       name: 'Free',
       price: 'US$0',
@@ -326,8 +322,6 @@ const es: typeof en = {
         'Pruebas de carga de hasta <strong>500 usuarios virtuales</strong> y <strong>60 minutos</strong>',
         'Soporte por correo',
       ],
-      soonTitle: 'Próximamente en Pro',
-      soon: ['Interfaz de git con diffs que entienden Arazzo', 'Un CLI para ejecutar tus workflows en CI', 'Comparar versiones de un contrato y ver la cobertura', 'Comparar ejecuciones en el tiempo'],
     },
     edu: {
       title: 'Gratis para estudiantes y docentes',
@@ -349,8 +343,6 @@ const es: typeof en = {
       ['Ejecutar workflows con archivos de datos', '10 filas', 'Sin límite'],
       ['Pruebas de carga', '50 usuarios, 10 min', '500 usuarios, 60 min'],
       ['Reportes en HTML y JSON', 'Sí', 'Sí'],
-      ['Interfaz de git', 'Ver los cambios', 'Completa (próximamente)'],
-      ['CLI para CI', '—', 'Próximamente'],
     ],
     faqTitle: 'Preguntas',
     faq: [

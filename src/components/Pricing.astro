@@ -37,8 +37,6 @@ const home = lang === 'en' ? '/' : '/es/'
         <a class="btn btn-primary" href={`${home}#waitlist`}>{p.pro.cta}</a>
         <p class="plan-trial">{p.pro.trial}</p>
         <ul class="plan-items">{p.pro.items.map((item) => <li set:html={item} />)}</ul>
-        <p class="plan-soon-title">{p.pro.soonTitle}</p>
-        <ul class="plan-items plan-soon">{p.pro.soon.map((item) => <li>{item}</li>)}</ul>
       </article>
     </div>
 
