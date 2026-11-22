@@ -61,6 +61,8 @@ const links = [
         </a>
         <nav class="nav" aria-label="Main">
           {links.map((l) => <a href={`${home}#${l.id}`}>{l.label}</a>)}
+          {/* Precios: solo con `npm run dev` hasta que se abra la venta (src/lib/commerce.ts). */}
+          {commerceVisible && <a href={`${home}pricing/`}>{commerce[lang].footer.pricing}</a>}
         </nav>
         <div class="header-actions">
           <a class="lang" href={other} hreflang={lang === 'en' ? 'es' : 'en'}>{t.nav.switchLang}</a>
@@ -71,6 +73,7 @@ const links = [
             </summary>
             <nav class="menu-panel" aria-label={t.nav.menu}>
               {links.map((l) => <a href={`${home}#${l.id}`}>{l.label}</a>)}
+              {commerceVisible && <a href={`${home}pricing/`}>{commerce[lang].footer.pricing}</a>}
               <a href={other} hreflang={lang === 'en' ? 'es' : 'en'}>{t.nav.switchLang}</a>
             </nav>
           </details>
