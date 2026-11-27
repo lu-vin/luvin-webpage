@@ -9,7 +9,7 @@ const en = {
     description:
       'Luvin turns your OpenAPI and AsyncAPI contracts into visual API workflows, writes the Arazzo for you and tests every step of the chain. Coming 2027.',
   },
-  nav: { problem: 'The problem', how: 'How it works', chains: 'Real chains', client: 'API client', compare: 'Compare', faq: 'FAQ', waitlist: 'Join the waitlist', switchLang: 'Español', menu: 'Menu' },
+  nav: { problem: 'The problem', how: 'How it works', chains: 'Real chains', client: 'API client', compare: 'Compare', faq: 'FAQ', founders: 'Founders', waitlist: 'Join the waitlist', switchLang: 'Español', menu: 'Menu' },
   hero: {
     eyebrow: 'Coming 2027',
     title1: 'Test the chain,',
@@ -157,6 +157,30 @@ const en = {
       { q: 'Does it use AI to wire the steps?', a: 'No. Wiring follows rules over your contracts, so the same contracts always give the same result, and anything uncertain is marked for you to review.' },
     ],
   },
+  founders: {
+    kicker: 'Founders',
+    title: 'The people behind Luvin.',
+    story: 'Classmates since their first semester of university, they have worked together ever since. The idea for Luvin came out of an APIDays talk: Bryam walked out with it and got to work.',
+    linkedin: 'LinkedIn',
+    people: [
+      {
+        name: 'Bryam Vega',
+        role: 'Founder',
+        photo: '/media/founders/bryam.webp',
+        bio: 'Lead Consultant, passionate about APIs, with 7+ years in consulting.',
+        off: 'Off the keyboard: music, football, video games, travel (a lot) and family.',
+        linkedin: 'https://www.linkedin.com/in/bryam-vega/',
+      },
+      {
+        name: 'David Morales',
+        role: 'Co-Founder',
+        photo: '/media/founders/david.webp',
+        bio: 'Consultant, with 5+ years in consulting and tech companies.',
+        off: 'Off the keyboard: football, Formula 1, and being a role model for the little one at home.',
+        linkedin: 'https://www.linkedin.com/in/damoralesr97/',
+      },
+    ],
+  },
   waitlist: {
     title: 'Be the first to test the chain.',
     lead: 'Luvin launches in 2027. Join the waitlist for early access and the first pilots.',
@@ -203,7 +227,7 @@ const es: typeof en = {
     description:
       'Luvin convierte tus contratos OpenAPI y AsyncAPI en workflows visuales, escribe el Arazzo por ti y prueba cada paso de la cadena. Llega en 2027.',
   },
-  nav: { problem: 'El problema', how: 'Cómo funciona', chains: 'Cadenas reales', client: 'Cliente de APIs', compare: 'Comparación', faq: 'Preguntas', waitlist: 'Únete a la lista', switchLang: 'English', menu: 'Menú' },
+  nav: { problem: 'El problema', how: 'Cómo funciona', chains: 'Cadenas reales', client: 'Cliente de APIs', compare: 'Comparación', faq: 'Preguntas', founders: 'Founders', waitlist: 'Únete a la lista', switchLang: 'English', menu: 'Menú' },
   hero: {
     eyebrow: 'Llega en 2027',
     title1: 'Prueba la cadena,',
@@ -349,6 +373,30 @@ const es: typeof en = {
       { q: '¿Dónde funciona?', a: 'Como app de escritorio para macOS y Windows. Todo corre en tu equipo: no hay backend ni cuenta.' },
       { q: '¿Reemplaza mi CI o ejecuta integraciones en producción?', a: 'No. Luvin sirve para diseñar, depurar y demostrar cadenas de APIs. Los archivos Arazzo que escribe son los que llevas a CI, con cualquier runner de Arazzo.' },
       { q: '¿Usa IA para conectar los pasos?', a: 'No. Las conexiones siguen reglas sobre tus contratos: los mismos contratos dan siempre el mismo resultado, y lo dudoso queda marcado para que lo revises.' },
+    ],
+  },
+  founders: {
+    kicker: 'Founders',
+    title: 'Las personas detrás de Luvin.',
+    story: 'Se conocieron en el primer ciclo de la universidad y desde entonces han trabajado juntos. La idea de Luvin nació en una charla de APIDays: Bryam salió con ella en la cabeza y se puso manos a la obra.',
+    linkedin: 'LinkedIn',
+    people: [
+      {
+        name: 'Bryam Vega',
+        role: 'Founder',
+        photo: '/media/founders/bryam.webp',
+        bio: 'Lead Consultant y apasionado por las APIs, con más de 7 años en consultoría.',
+        off: 'Fuera del código: música, fútbol, videojuegos, viajar (mucho) y su familia.',
+        linkedin: 'https://www.linkedin.com/in/bryam-vega/',
+      },
+      {
+        name: 'David Morales',
+        role: 'Co-Founder',
+        photo: '/media/founders/david.webp',
+        bio: 'Consultant, con más de 5 años en consultoría y empresas de tecnología.',
+        off: 'Fuera del código: fútbol, Fórmula 1 y ser la inspiración de su pequeño.',
+        linkedin: 'https://www.linkedin.com/in/damoralesr97/',
+      },
     ],
   },
   waitlist: {
