@@ -1,0 +1,72 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+  /** Es la página principal: el título va como h1 y la sección arranca bajo la cabecera. */
+  page?: boolean
+}
+const { lang, page = false } = Astro.props
+const Heading = page ? 'h1' : 'h2'
+const t = strings[lang]
+const tools = [
+  { key: 'luvin', name: 'Luvin', icon: '/logo.svg' },
+  { key: 'postman', name: 'Postman', icon: '/media/postman.svg' },
+  { key: 'bruno', name: 'Bruno', icon: '/media/bruno.svg' },
+  { key: 'insomnia', name: 'Insomnia', icon: '/media/insomnia.svg' },
+] as const
+---
+
+<!-- Comparación -->
+<section id="compare" class={`section${page ? ' page-top' : ''}`}>
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.compare.kicker}</p>
+      <Heading>{t.compare.title}</Heading>
+      <p class="body">{t.compare.lead}</p>
+    </div>
+    <div class="table-wrap reveal">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">—</span></th>
+            {
+              tools.map((tool) => (
+                <th scope="col" class={tool.key === 'luvin' ? 'us' : ''}>
+                  <img src={tool.icon} width="30" height="30" alt="" />
+                  <span>{tool.name}</span>
+                </th>
+              ))
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {
+            t.compare.rows.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                <td class="us">
+                  <span class="check" aria-hidden="true">✓</span>
+                  {row.luvin}
+                </td>
+                <td>{row.postman}</td>
+                <td>{row.bruno}</td>
+                <td>{row.insomnia}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="vs-teaser reveal">
+      <img src="/media/postman.svg" width="40" height="40" alt="" />
+      <div class="vs-teaser-copy">
+        <p class="vs-q">{t.flows.homeQuestion}</p>
+        <p>{t.flows.lead}</p>
+      </div>
+      <a class="btn btn-ghost" href={`${lang === 'en' ? '/' : '/es/'}compare/postman-flows/`}>{t.flows.homeLink} →</a>
+    </div>
+    <p class="fine center">{t.compare.note}</p>
+  </div>
+</section>

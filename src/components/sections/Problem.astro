@@ -1,0 +1,23 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+const media = lang === 'en' ? '/media' : '/media/es'
+---
+
+<!-- El problema -->
+<section id="problem" class="section">
+  <div class="container narrow center reveal">
+    <p class="kicker">{t.problem.kicker}</p>
+    <h2>{t.problem.title}</h2>
+    <p class="body">{t.problem.body}</p>
+  </div>
+  <div class="container reveal">
+    <img class="chain" src={`${media}/chain-dark.svg`} alt={t.problem.chainAlt} width="1280" height="430" loading="lazy" />
+    <p class="answer">{t.problem.answer}</p>
+  </div>
+</section>

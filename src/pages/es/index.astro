@@ -1,6 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro'
-import Landing from '../../components/Landing.astro'
+import Hero from '../../components/sections/Hero.astro'
+import How from '../../components/sections/How.astro'
+import Problem from '../../components/sections/Problem.astro'
+import Highlights from '../../components/sections/Highlights.astro'
+import Who from '../../components/sections/Who.astro'
+import Waitlist from '../../components/sections/Waitlist.astro'
+import { strings } from '../../i18n/strings'
+
+const lang = 'es'
+const t = strings[lang]
 ---
 
-<Base lang="es"><Landing lang="es" /></Base>
+<Base lang={lang}>
+  <Hero lang={lang} />
+  <Problem lang={lang} />
+  <How lang={lang} />
+  <Highlights lang={lang} />
+  <Who lang={lang} />
+  <Waitlist lang={lang} />
+</Base>

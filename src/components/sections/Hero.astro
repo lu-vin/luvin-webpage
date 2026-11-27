@@ -1,0 +1,51 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+---
+
+<!-- Portada -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <svg class="hero-wire" viewBox="0 0 1200 200" preserveAspectRatio="none">
+      <path d="M-20 150 C 200 150, 260 60, 420 60 S 700 140, 860 120 S 1080 40, 1220 50" />
+      <path class="flow" d="M-20 150 C 200 150, 260 60, 420 60 S 700 140, 860 120 S 1080 40, 1220 50" />
+    </svg>
+  </div>
+  <div class="container hero-copy reveal">
+    <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>{t.hero.eyebrow}</p>
+    <h1>{t.hero.title1} <span class="accent">{t.hero.title2}</span></h1>
+    <p class="lead">{t.hero.lead}</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#waitlist">{t.hero.primary}</a>
+      <a class="btn btn-ghost" href="#how">{t.hero.secondary}</a>
+    </div>
+    <p class="note">{t.hero.note}</p>
+  </div>
+  <div class="container hero-media reveal">
+    <div class="frame">
+      <div class="frame-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+      <video
+        class="promo"
+        src="/media/promo.mp4"
+        poster="/media/promo-poster.jpg"
+        aria-label={t.hero.videoLabel}
+        controls
+        muted
+        autoplay
+        loop
+        playsinline
+        preload="metadata"></video>
+    </div>
+  </div>
+  <div class="container specs reveal">
+    <p class="specs-label">{t.specs.label}</p>
+    <ul>
+      {t.specs.items.map((s) => <li>{s}</li>)}
+    </ul>
+  </div>
+</section>

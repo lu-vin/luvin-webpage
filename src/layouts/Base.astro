@@ -21,14 +21,14 @@ const home = lang === 'en' ? '/' : '/es/'
 const other = (lang === 'en' ? '/es/' : '/') + path
 const canonical = new URL(home + path, Astro.site)
 const og = new URL(`/media/og-${lang}.jpg`, Astro.site)
+// Las páginas del sitio; la actual se marca en el menú (la primera parte de `path`).
 const links = [
-  { id: 'how', label: t.nav.how },
-  { id: 'chains', label: t.nav.chains },
-  { id: 'client', label: t.nav.client },
+  { id: 'product', label: t.nav.product },
   { id: 'compare', label: t.nav.compare },
+  { id: 'about', label: t.nav.about },
   { id: 'faq', label: t.nav.faq },
-  { id: 'founders', label: t.nav.founders },
 ]
+const current = path.split('/')[0]
 ---
 
 <!doctype html>
@@ -51,6 +51,16 @@ const links = [
     <meta name="twitter:card" content="summary_large_image" />
     <!-- Con JavaScript, las secciones aparecen al entrar en pantalla (sin él se ven desde el principio). -->
     <script is:inline>document.documentElement.classList.add('js')</script>
+    {
+      // Los enlaces de antes (todo en una página): /#faq, /#founders… llevan a su página nueva.
+      path === '' && (
+        <script is:inline define:vars={{ home }}>
+          var moved = { chains: 'product/#chains', client: 'product/#client', features: 'product/#features', compare: 'compare/', faq: 'faq/', founders: 'about/' }
+          var to = moved[location.hash.slice(1)]
+          if (to) location.replace(home + to)
+        </script>
+      )
+    }
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -61,19 +71,27 @@ const links = [
           <Wordmark size={26} />
         </a>
         <nav class="nav" aria-label="Main">
-          {links.map((l) => <a href={`${home}#${l.id}`}>{l.label}</a>)}
+          {links.map((l) => (
+            <a href={`${home}${l.id}/`} aria-current={current === l.id ? 'page' : undefined}>
+              {l.label}
+            </a>
+          ))}
           {/* Precios: solo con `npm run dev` hasta que se abra la venta (src/lib/commerce.ts). */}
           {commerceVisible && <a href={`${home}pricing/`}>{commerce[lang].footer.pricing}</a>}
         </nav>
         <div class="header-actions">
           <a class="lang" href={other} hreflang={lang === 'en' ? 'es' : 'en'}>{t.nav.switchLang}</a>
-          <a class="btn btn-primary btn-sm" href={`${home}#waitlist`}>{t.nav.waitlist}</a>
+          <a class="btn btn-primary btn-sm" href="#waitlist">{t.nav.waitlist}</a>
           <details class="menu">
             <summary aria-label={t.nav.menu}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </summary>
             <nav class="menu-panel" aria-label={t.nav.menu}>
-              {links.map((l) => <a href={`${home}#${l.id}`}>{l.label}</a>)}
+              {links.map((l) => (
+                <a href={`${home}${l.id}/`} aria-current={current === l.id ? 'page' : undefined}>
+                  {l.label}
+                </a>
+              ))}
               {commerceVisible && <a href={`${home}pricing/`}>{commerce[lang].footer.pricing}</a>}
               <a href={other} hreflang={lang === 'en' ? 'es' : 'en'}>{t.nav.switchLang}</a>
             </nav>
@@ -91,6 +109,11 @@ const links = [
           <Wordmark size={22} />
         </div>
         <p class="footer-tagline">{t.footer.tagline}</p>
+        <nav class="footer-links footer-site" aria-label={t.nav.menu}>
+          <a href={home}>{t.nav.home}</a>
+          {links.map((l) => <a href={`${home}${l.id}/`}>{l.label}</a>)}
+          <a href={`${home}compare/postman-flows/`}>Luvin vs {t.flows.flowsLabel}</a>
+        </nav>
         {
           // Precios y páginas legales: solo con `npm run dev` hasta que se abra la venta (src/lib/commerce.ts).
           commerceVisible && (
@@ -113,6 +136,35 @@ const links = [
       const onScroll = () => header?.classList.toggle('scrolled', scrollY > 8)
       addEventListener('scroll', onScroll, { passive: true })
       onScroll()
+
+      // Lo que entra en pantalla aparece con una animación corta, y los videos de la app se reproducen
+      // solo mientras se ven (así no se descargan todos al abrir la página).
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+      const seen = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue
+            e.target.classList.add('in')
+            seen.unobserve(e.target)
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      )
+      document.querySelectorAll('.reveal').forEach((el) => seen.observe(el))
+      const clips = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            const v = e.target as HTMLVideoElement
+            if (e.isIntersecting && !reduced) void v.play().catch(() => {})
+            else v.pause()
+          }
+        },
+        { threshold: 0.35 },
+      )
+      document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]').forEach((v) => {
+        if (reduced) v.controls = true
+        clips.observe(v)
+      })
     </script>
   </body>
 </html>

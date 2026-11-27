@@ -9,7 +9,37 @@ const en = {
     description:
       'Luvin turns your OpenAPI and AsyncAPI contracts into visual API workflows, writes the Arazzo for you and tests every step of the chain. Coming 2027.',
   },
-  nav: { problem: 'The problem', how: 'How it works', chains: 'Real chains', client: 'API client', compare: 'Compare', faq: 'FAQ', founders: 'Founders', waitlist: 'Join the waitlist', switchLang: 'Español', menu: 'Menu' },
+  nav: { product: 'Product', compare: 'Compare', about: 'About', faq: 'FAQ', waitlist: 'Join the waitlist', switchLang: 'Español', menu: 'Menu', home: 'Home' },
+  pages: {
+    product: {
+      metaTitle: 'Product · Luvin',
+      metaDescription: 'Design a chain of API calls on a canvas, run generated cases against your API or in simulation, and read every verdict in plain words. Plus a full API client.',
+      kicker: 'Product',
+      title: 'Design the chain, run it, understand it.',
+      lead: 'Everything Luvin does, from drawing a workflow to the single request: with videos of the app as it is today.',
+    },
+    compare: {
+      metaTitle: 'Compare · Luvin',
+      metaDescription: 'How Luvin compares with the API clients you already use, and why it works next to them for chains of API calls.',
+    },
+    about: {
+      metaTitle: 'About · Luvin',
+      metaDescription: 'Meet the founders of Luvin and how the idea was born.',
+    },
+    faq: {
+      metaTitle: 'FAQ · Luvin',
+      metaDescription: 'When Luvin launches, what it needs, where it runs and what happens to your data.',
+    },
+  },
+  highlights: {
+    kicker: 'Explore',
+    title: 'Get to know Luvin.',
+    items: [
+      { page: 'product', title: 'Design and test the chain', body: 'Draw the workflow, run the cases and read each verdict in plain words. With videos of the app.', link: 'See the product' },
+      { page: 'compare', title: 'Next to the tools you use', body: 'Keep your API client for single requests: see what Luvin adds for the chain.', link: 'Compare' },
+      { page: 'about', title: 'The people behind it', body: 'Who builds Luvin and how the idea was born.', link: 'Meet the founders' },
+    ],
+  },
   hero: {
     eyebrow: 'Coming 2027',
     title1: 'Test the chain,',
@@ -227,7 +257,37 @@ const es: typeof en = {
     description:
       'Luvin convierte tus contratos OpenAPI y AsyncAPI en workflows visuales, escribe el Arazzo por ti y prueba cada paso de la cadena. Llega en 2027.',
   },
-  nav: { problem: 'El problema', how: 'Cómo funciona', chains: 'Cadenas reales', client: 'Cliente de APIs', compare: 'Comparación', faq: 'Preguntas', founders: 'Founders', waitlist: 'Únete a la lista', switchLang: 'English', menu: 'Menú' },
+  nav: { product: 'Producto', compare: 'Comparar', about: 'Nosotros', faq: 'Preguntas', waitlist: 'Únete a la lista', switchLang: 'English', menu: 'Menú', home: 'Inicio' },
+  pages: {
+    product: {
+      metaTitle: 'Producto · Luvin',
+      metaDescription: 'Diseña una cadena de llamadas a APIs en un lienzo, ejecuta casos generados contra tu API o en simulación y lee cada veredicto en palabras simples. Y un cliente de APIs completo.',
+      kicker: 'Producto',
+      title: 'Diseña la cadena, ejecútala, entiéndela.',
+      lead: 'Todo lo que hace Luvin, desde dibujar un workflow hasta el request suelto: con videos de la app tal como es hoy.',
+    },
+    compare: {
+      metaTitle: 'Comparar · Luvin',
+      metaDescription: 'Cómo se compara Luvin con los clientes de APIs que ya usas, y por qué trabaja junto a ellos para las cadenas de llamadas.',
+    },
+    about: {
+      metaTitle: 'Nosotros · Luvin',
+      metaDescription: 'Conoce a los founders de Luvin y cómo nació la idea.',
+    },
+    faq: {
+      metaTitle: 'Preguntas · Luvin',
+      metaDescription: 'Cuándo llega Luvin, qué necesita, dónde corre y qué pasa con tus datos.',
+    },
+  },
+  highlights: {
+    kicker: 'Explora',
+    title: 'Conoce Luvin.',
+    items: [
+      { page: 'product', title: 'Diseña y prueba la cadena', body: 'Dibuja el workflow, ejecuta los casos y lee cada veredicto en palabras simples. Con videos de la app.', link: 'Ver el producto' },
+      { page: 'compare', title: 'Junto a las herramientas que usas', body: 'Sigue usando tu cliente de APIs para los requests sueltos: mira lo que Luvin suma para la cadena.', link: 'Comparar' },
+      { page: 'about', title: 'Las personas detrás', body: 'Quién hace Luvin y cómo nació la idea.', link: 'Conoce a los founders' },
+    ],
+  },
   hero: {
     eyebrow: 'Llega en 2027',
     title1: 'Prueba la cadena,',

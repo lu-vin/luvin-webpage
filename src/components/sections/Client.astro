@@ -1,0 +1,46 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+import Icon from '../Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+// Capturas y videos de la app actual (los mismos de la documentación), en el idioma de la página.
+const app = `/media/app/${lang}`
+---
+
+<!-- Cliente de APIs -->
+<section id="client" class="section alt">
+  <div class="container client">
+    <div class="client-copy reveal">
+      <p class="kicker">{t.client.kicker}</p>
+      <h2>{t.client.title}</h2>
+      <p class="body">{t.client.lead}</p>
+      <ul class="client-list">
+        {
+          t.client.items.map((c) => (
+            <li>
+              <span class="ico"><Icon name={c.icon} /></span>
+              <div>
+                <h3>{c.title}</h3>
+                <p>{c.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="client-media reveal">
+      <img class="shot-back" src={`${app}/import-postman.webp`} alt={t.client.altImport} width="1600" height="1000" loading="lazy" />
+      <img class="shot-front" src={`${app}/request.webp`} alt={t.client.alt} width="1600" height="1000" loading="lazy" />
+    </div>
+  </div>
+  <div class="container auth reveal">
+    <p class="auth-title"><Icon name="shield" size={18} />{t.client.authTitle}</p>
+    <ul class="chips">
+      {t.client.auths.map((a) => <li>{a}</li>)}
+    </ul>
+  </div>
+</section>
