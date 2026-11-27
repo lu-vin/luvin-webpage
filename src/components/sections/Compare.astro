@@ -26,7 +26,7 @@ const tools = [
       <p class="body">{t.compare.lead}</p>
     </div>
     <div class="table-wrap reveal">
-      <table class="compare">
+      <table class="compare compare-main">
         <thead>
           <tr>
             <th scope="col"><span class="sr-only">—</span></th>
@@ -45,13 +45,13 @@ const tools = [
             t.compare.rows.map((row) => (
               <tr>
                 <th scope="row">{row.label}</th>
-                <td class="us">
+                <td class="us" data-label="Luvin">
                   <span class="check" aria-hidden="true">✓</span>
                   {row.luvin}
                 </td>
-                <td>{row.postman}</td>
-                <td>{row.bruno}</td>
-                <td>{row.insomnia}</td>
+                <td data-label="Postman">{row.postman}</td>
+                <td data-label="Bruno">{row.bruno}</td>
+                <td data-label="Insomnia">{row.insomnia}</td>
               </tr>
             ))
           }
@@ -70,3 +70,27 @@ const tools = [
     <p class="fine center">{t.compare.note}</p>
   </div>
 </section>
+
+<style is:global>
+  /* La tabla, en grande: la columna de Luvin resalta con su propio brillo. */
+  .compare-main { font-size: 16.5px; }
+  .compare-main th, .compare-main td { padding: 22px 24px; }
+  .compare-main tbody th { font-size: 17px; }
+  .compare-main thead th { font-size: 16px; }
+  .compare-main .us { background: linear-gradient(180deg, rgba(47, 143, 63, .18), rgba(47, 143, 63, .08)); box-shadow: inset 1px 0 0 rgba(111, 207, 127, .35), inset -1px 0 0 rgba(111, 207, 127, .35); }
+  .compare-main thead .us { box-shadow: inset 1px 0 0 rgba(111, 207, 127, .35), inset -1px 0 0 rgba(111, 207, 127, .35), inset 0 3px 0 var(--node); }
+  /* En el teléfono, cada fila es una tarjeta: primero Luvin y debajo los demás. */
+  @media (max-width: 720px) {
+    #compare .table-wrap { overflow: visible; border: 0; background: none; }
+    .compare-main, .compare-main tbody, .compare-main tr, .compare-main th, .compare-main td { display: block; width: auto; }
+    .compare-main { min-width: 0; }
+    .compare-main thead { display: none; }
+    .compare-main tr { margin-bottom: 14px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--card); }
+    .compare-main tbody th { width: auto; padding: 16px 18px 6px; font-size: 18px; }
+    .compare-main td { padding: 10px 18px; border: 0; font-size: 15px; }
+    .compare-main td::before { content: attr(data-label); display: block; margin-bottom: 3px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+    .compare-main td.us { margin: 6px 10px 4px; border-radius: 12px; box-shadow: inset 0 0 0 1px rgba(111, 207, 127, .35); }
+    .compare-main td.us::before { color: var(--node); }
+    .compare-main td.us .check { display: none; }
+  }
+</style>
