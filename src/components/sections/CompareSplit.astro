@@ -1,0 +1,212 @@
+---
+// Comparar: la misma cadena de tres llamadas, de dos formas. Arriba, lo que se escribe y mantiene en
+// un cliente de APIs, una tarjeta por llamada (con la sintaxis de la documentación pública de Postman
+// y de Bruno); abajo, el mismo workflow en Luvin, con cada paso bajo su tarjeta.
+import SceneCanvas from '../story/SceneCanvas.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+const s = t.compare.split
+
+const tools = [
+  {
+    key: 'postman',
+    name: 'Postman',
+    icon: '/media/postman.svg',
+    steps: [
+      {
+        where: 'Tests',
+        lines: ['const body = pm.response.json();', 'pm.environment.set("token", body.token);', 'pm.environment.set("customerId", body.customerId);'],
+      },
+      {
+        where: 'URL · Headers · Tests',
+        lines: [
+          'GET {{baseUrl}}/customers/{{customerId}}',
+          'Authorization: Bearer {{token}}',
+          'const customer = pm.response.json();',
+          'pm.environment.set("id", customer.id);',
+          'pm.test("customer is active", () => {',
+          '  pm.expect(customer.status).to.eql("ACTIVE");',
+          '});',
+        ],
+      },
+      { where: 'Headers · Body', lines: ['Authorization: Bearer {{token}}', '{ "customerId": "{{id}}" }'] },
+    ],
+  },
+  {
+    key: 'bruno',
+    name: 'Bruno',
+    icon: '/media/bruno.svg',
+    steps: [
+      { where: 'Post response', lines: ['bru.setVar("token", res.body.token);', 'bru.setVar("customerId", res.body.customerId);'] },
+      {
+        where: 'URL · Headers · Scripts',
+        lines: [
+          'GET {{baseUrl}}/customers/{{customerId}}',
+          'Authorization: Bearer {{token}}',
+          'bru.setVar("id", res.body.id);',
+          'test("customer is active", () => {',
+          '  expect(res.body.status).to.equal("ACTIVE");',
+          '});',
+        ],
+      },
+      { where: 'Headers · Body', lines: ['Authorization: Bearer {{token}}', '{ "customerId": "{{id}}" }'] },
+    ],
+  },
+]
+const names = ['signIn', 'getCustomer', 'openAccount']
+const count = (tool: (typeof tools)[number]) => tool.steps.reduce((n, st) => n + st.lines.length, 0)
+---
+
+<section class="section page-top cmp-split">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{s.kicker}</p>
+      <h1 class="st-big">{s.title}</h1>
+      <p class="st-sub">{s.lead}</p>
+    </div>
+
+    <div class="cmp-panel cmp-scripts">
+      <div class="cmp-head">
+        <h2>{s.scripts}</h2>
+        <div class="cmp-tabs" role="tablist">
+          {
+            tools.map((tool, i) => (
+              <button type="button" role="tab" class="cmp-tab" data-i={i} aria-selected={String(i === 0)}>
+                <img src={tool.icon} width="18" height="18" alt="" />
+                {tool.name}
+              </button>
+            ))
+          }
+        </div>
+        <p class="cmp-count cmp-bad">
+          {tools.map((tool, i) => <b data-i={i} hidden={i !== 0}>{count(tool)}</b>)}
+          {s.lines}
+        </p>
+      </div>
+      {
+        tools.map((tool, i) => (
+          <div class="cmp-cards" data-i={i} hidden={i !== 0}>
+            {tool.steps.map((st, k) => (
+              <div class="cmp-card">
+                <p class="cmp-card-head">
+                  <span class="sc-n">{k + 1}</span>
+                  <b>{names[k]}</b>
+                  <span>{st.where}</span>
+                </p>
+                <div class="cmp-code">
+                  {st.lines.map((l) => (
+                    <span>{l}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="cmp-panel cmp-luvin">
+      <div class="cmp-head">
+        <h2><img src="/logo.svg" width="22" height="22" alt="" />{s.luvin}</h2>
+        <p class="cmp-count cmp-good"><b>0</b> {s.zero}</p>
+      </div>
+      <div class="cmp-canvas">
+        <SceneCanvas lang={lang} id="cmp-w" variant="wide" label={s.label} packets values class="st-only-wide" />
+        <SceneCanvas lang={lang} id="cmp-t" variant="tall" label={s.label} packets values class="st-only-tall" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.cmp-split')
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('.cmp-tab')]
+    const sets = [...root.querySelectorAll<HTMLElement>('.cmp-cards')]
+    const counts = [...root.querySelectorAll<HTMLElement>('.cmp-count.cmp-bad b')]
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    let token = 0
+    // Las líneas aparecen una a una, tarjeta por tarjeta, y el contador sube con ellas.
+    async function type(i: number) {
+      const my = ++token
+      if (reduced) return
+      const lines = [...sets[i].querySelectorAll<HTMLElement>('.cmp-code span')]
+      lines.forEach((l) => l.classList.remove('on'))
+      counts[i].textContent = '0'
+      for (const [n, l] of lines.entries()) {
+        if (my !== token) return
+        l.classList.add('on')
+        counts[i].textContent = String(n + 1)
+        await new Promise((r) => setTimeout(r, 140))
+      }
+    }
+    function show(i: number) {
+      tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === i)))
+      sets.forEach((c, k) => (c.hidden = k !== i))
+      counts.forEach((c, k) => (c.hidden = k !== i))
+      void type(i)
+    }
+    tabs.forEach((t, i) => t.addEventListener('click', () => show(i)))
+    if (!reduced) {
+      root.classList.add('cmp-typing')
+      new IntersectionObserver(
+        (entries, io) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect()
+            root.classList.add('cmp-go')
+            void type(0)
+          }
+        },
+        { threshold: 0.3 },
+      ).observe(root.querySelector('.cmp-scripts')!)
+    }
+  }
+</script>
+
+<style is:global>
+  .cmp-split { padding-bottom: 64px; }
+  .section.cmp-split .st-big { font-size: clamp(42px, 6.6vw, 88px); letter-spacing: -.045em; line-height: 1; margin-bottom: 0; }
+  .cmp-panel { max-width: 1120px; margin: 0 auto; padding: 22px; border-radius: 24px; border: 1px solid var(--line); background: var(--card); }
+  .cmp-scripts { margin-top: 56px; background: radial-gradient(600px 240px at 0% 0%, rgba(229, 72, 77, .07), transparent 70%), var(--card); }
+  .cmp-luvin { margin-top: 16px; background: radial-gradient(600px 240px at 100% 0%, rgba(47, 143, 63, .14), transparent 70%), var(--card); border-color: rgba(47, 143, 63, .45); }
+  .cmp-head { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; }
+  .cmp-head h2 { display: inline-flex; align-items: center; gap: 9px; font-size: 21px; letter-spacing: -.02em; }
+  .cmp-tabs { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line-hi); }
+  .cmp-tab { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 0 13px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 13.5px/1 inherit; font-family: inherit; cursor: pointer; }
+  .cmp-tab[aria-selected='true'] { background: var(--card-hi); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-hi); }
+  .cmp-count { margin-left: auto; color: var(--muted); font-size: 14.5px; }
+  .cmp-count b { margin-right: 6px; font-size: 30px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; vertical-align: -.12em; }
+  .cmp-count b[hidden] { display: none; }
+  .cmp-bad b { color: #ff8a8d; }
+  .cmp-good b { color: var(--node); }
+
+  .cmp-cards { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .cmp-cards[hidden] { display: none; }
+  .cmp-card { min-width: 0; border-radius: 14px; background: #0b120e; border: 1px solid var(--line-hi); overflow: hidden; }
+  .cmp-card-head { display: flex; align-items: center; gap: 7px; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .cmp-card-head .sc-n { width: 19px; height: 19px; font-size: 11px; flex: none; }
+  .cmp-card-head b { font-weight: 700; }
+  .cmp-card-head span:last-child { margin-left: auto; color: var(--faint); font-size: 11.5px; white-space: nowrap; }
+  .cmp-code { padding: 10px 12px 12px; font: 500 11.5px/1.65 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink); }
+  .cmp-code span { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 2ch; text-indent: -2ch; }
+  .cmp-typing .cmp-code span { opacity: 0; transition: opacity .2s; }
+  .cmp-typing .cmp-code span.on { opacity: 1; }
+
+  .cmp-canvas { margin: 6px auto 0; max-width: 900px; }
+  .cmp-typing:not(.cmp-go) .cmp-luvin .sc-draw { stroke-dashoffset: 1; }
+  .cmp-go .cmp-luvin .sc-draw { animation: st-draw 1.1s cubic-bezier(.45, 0, .2, 1) both; animation-delay: calc(.6s + var(--k) * .14s); }
+
+  @media (max-width: 860px) {
+    .cmp-cards { grid-template-columns: 1fr; }
+    .cmp-canvas { max-width: 330px; }
+    .cmp-count { margin-left: 0; width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .cmp-panel { padding: 16px; border-radius: 18px; }
+  }
+</style>
