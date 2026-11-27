@@ -17,6 +17,7 @@ npm run preview   # sirve dist/ para revisarlo
 |---|---|
 | Textos en inglés y español | `src/i18n/strings.ts` (mismas claves en los dos idiomas) |
 | Secciones de la página (portada, problema, cómo funciona, cadenas reales, cliente de APIs, comparación, funciones, para quién es, preguntas, lista de espera) | `src/components/Landing.astro` |
+| El juego de la portada (conectar, ejecutar y romper un workflow, simulado en el navegador) | `src/components/sections/ChainGame.astro`, textos en `strings.ts`, clave `game` |
 | Iconos de las tarjetas | `src/components/Icon.astro` |
 | Cabecera, pie y etiquetas de SEO/redes | `src/layouts/Base.astro` |
 | Colores y estilos | `src/styles/global.css` |
