@@ -29,6 +29,38 @@ const links = [
   { id: 'faq', label: t.nav.faq },
 ]
 const current = path.split('/')[0]
+// Datos estructurados (schema.org) solo en la portada: Luvin es una organización con este sitio oficial
+// y una app de desarrollo para macOS y Windows. Sin precios: todavía no son públicos.
+const root = new URL('/', Astro.site).href
+const ld =
+  path === ''
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Organization',
+            '@id': `${root}#organization`,
+            name: 'Luvin',
+            url: root,
+            logo: new URL('/logo-512.png', Astro.site).href,
+            sameAs: ['https://github.com/lu-vin'],
+            founder: t.founders.people.map((p) => ({ '@type': 'Person', name: p.name, sameAs: [p.linkedin] })),
+          },
+          { '@type': 'WebSite', '@id': `${root}#website`, name: 'Luvin', url: root, inLanguage: ['en', 'es'], publisher: { '@id': `${root}#organization` } },
+          {
+            '@type': 'SoftwareApplication',
+            name: 'Luvin',
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'macOS, Windows',
+            description,
+            url: canonical.href,
+            image: og.href,
+            inLanguage: lang,
+            publisher: { '@id': `${root}#organization` },
+          },
+        ],
+      }
+    : null
 ---
 
 <!doctype html>
@@ -43,12 +75,16 @@ const current = path.split('/')[0]
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={new URL('/' + path, Astro.site)} />
     <link rel="alternate" hreflang="es" href={new URL('/es/' + path, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/' + path, Astro.site)} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={og} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Luvin" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_ES'} />
     <meta name="twitter:card" content="summary_large_image" />
+    {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
     <!-- Con JavaScript, las secciones aparecen al entrar en pantalla (sin él se ven desde el principio). -->
     <script is:inline>document.documentElement.classList.add('js')</script>
     {

@@ -32,6 +32,13 @@ Las imágenes vienen de los otros repos:
 - Los videos de la portada (`public/media/hero-en.mp4` y `hero-es.mp4`, uno por idioma, con sus pósters `hero-poster-<idioma>.jpg`) son `videos/web/luvin-web-<idioma>.mp4` y `poster-<idioma>.jpg` de `luvin-marketing`, tal cual: ya vienen en H.264 con el índice al principio (faststart). Cloudflare no acepta archivos de más de 25 MiB; el de español pesa 24,2 MiB, así que si crece hay que recomprimirlo.
 - Las capturas y los videos cortos de la app (`public/media/app/<idioma>/`) se hacen con los scripts de `luvin-docs` (`scripts/capture.mjs` y `scripts/convert.mjs`) contra la **última versión publicada** de la app (hoy v0.2.0-beta.13), nunca contra main: el sitio solo muestra lo que ya salió. Escenas: `pokedex requests collection lists-new clip-list-pick-new clip-design-workflow clip-run-cases`, en `en` y `es`. Las del correo (`public/media/email/`) son las mismas, en JPG de 1072 px de ancho.
 
+## Buscadores
+
+- `src/pages/sitemap.xml.ts` genera `/sitemap.xml` con cada página pública en los dos idiomas (y sus alternativas `hreflang`). Una página nueva se agrega a su lista; precios y páginas legales no van hasta que se abra la venta.
+- `public/robots.txt` anuncia el sitemap. Cloudflare puede anteponer sus propias señales de contenido.
+- La portada lleva datos estructurados (`Base.astro`, schema.org): Luvin como organización (logo `public/logo-512.png`, GitHub y los fundadores) y como app para macOS y Windows, sin precios.
+- Fuera del código: el dominio está verificado en Google Search Console y Bing Webmaster Tools, con el sitemap enviado.
+
 ## La comparativa se revisa cada 3 meses
 
 La página **Comparar** (`/compare/`, `/compare/postman-flows/`) y la escena «La misma cadena. De dos formas» afirman cosas sobre otros productos. Tienen que seguir siendo ciertas:
