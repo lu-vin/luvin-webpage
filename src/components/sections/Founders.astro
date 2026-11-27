@@ -1,4 +1,6 @@
 ---
+// Nosotros: la historia como un workflow (cuatro pasos unidos por la línea de datos), los fundadores
+// en grande con su foto "fuera del teclado" y el lema al cierre.
 import { strings, type Lang } from '../../i18n/strings'
 
 interface Props {
@@ -9,31 +11,113 @@ interface Props {
 const { lang, page = false } = Astro.props
 const Heading = page ? 'h1' : 'h2'
 const t = strings[lang]
+const f = t.founders
+const [closeA, ...closeB] = f.closing.split(',')
+const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1)
 ---
 
-<!-- Founders -->
-<section id="founders" class={`section${page ? ' page-top' : ''}`}>
+<section id="founders" class={`section ab${page ? ' page-top' : ''}`}>
   <div class="container">
     <div class="center narrow reveal">
-      <p class="kicker">{t.founders.kicker}</p>
-      <Heading>{t.founders.title}</Heading>
-      <p class="body">{t.founders.story}</p>
+      <p class="kicker">{f.kicker}</p>
+      <Heading class="st-big">{f.title}</Heading>
+      <p class="st-sub">{f.story}</p>
     </div>
-    <div class="grid-2 founders">
+
+    <ol class="ab-line reveal">
       {
-        t.founders.people.map((f) => (
-          <article class="card founder reveal">
-            <img class="founder-photo" src={f.photo} width="160" height="160" alt={f.name} loading="lazy" decoding="async" />
-            <h3>{f.name}</h3>
-            <p class="founder-role">{f.role}</p>
-            <p>{f.bio}</p>
-            <p class="founder-off">{f.off}</p>
-            <a class="founder-link" href={f.linkedin} target="_blank" rel="noopener noreferrer">
-              {t.founders.linkedin} ↗
-            </a>
+        f.timeline.map((m, i) => (
+          <li class="ab-step" style={`--k:${i}`}>
+            <span class="ab-n">{i + 1}</span>
+            <b>{m.when}</b>
+            <p>{m.what}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="ab-people">
+      {
+        f.people.map((p, i) => (
+          <article class="ab-person reveal" style={`transition-delay:${i * 0.1}s`}>
+            <img class="ab-portrait" src={p.portrait} width="800" height="800" alt={p.name} loading="lazy" decoding="async" />
+            <div class="ab-body">
+              <p class="ab-role">{p.role}</p>
+              <h2 class="ab-name">{p.name}</h2>
+              <p class="ab-bio">{p.bio}</p>
+              <div class="ab-off">
+                <img src={p.offPhoto} width="600" height="800" alt={p.offAlt} loading="lazy" decoding="async" />
+                <div>
+                  <p class="ab-off-label">{f.offLabel}</p>
+                  <p>{cap(p.off.replace(/^[^:]+:\s*/, ''))}</p>
+                </div>
+              </div>
+              <a class="ab-link" href={p.linkedin} target="_blank" rel="noopener noreferrer">
+                {f.linkedin} ↗
+              </a>
+            </div>
           </article>
         ))
       }
     </div>
+
+    <p class="ab-closing reveal">
+      {closeA},<span class="accent">{closeB.join(',')}</span>
+    </p>
   </div>
 </section>
+
+<style is:global>
+  .section.ab .st-big { font-size: clamp(42px, 6.8vw, 92px); letter-spacing: -.045em; line-height: 1; margin-bottom: 0; }
+
+  /* La historia, como un workflow */
+  .ab-line { position: relative; margin-top: 72px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+  .ab-line::before {
+    content: ''; position: absolute; top: 21px; left: 22px; right: calc(25% - 22px); height: 2px;
+    background: repeating-linear-gradient(90deg, #b58cff 0 7px, transparent 7px 12px);
+    transform-origin: left; transition: transform 1.4s cubic-bezier(.45, 0, .2, 1) .2s;
+  }
+  .js .ab-line:not(.in)::before { transform: scaleX(0); }
+  .ab-step { position: relative; }
+  .ab-n { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 800; box-shadow: 0 0 0 6px var(--bg), 0 0 26px rgba(47, 143, 63, .5); }
+  .ab-step b { display: block; margin-top: 18px; font-size: 21px; letter-spacing: -.02em; }
+  .ab-step p { margin-top: 8px; color: var(--muted); font-size: 16px; }
+  .js .ab-line:not(.in) .ab-step { opacity: 0; transform: translateY(14px); }
+  .ab-line .ab-step { transition: opacity .6s calc(.3s + var(--k) * .25s), transform .7s cubic-bezier(.2, .7, .2, 1) calc(.3s + var(--k) * .25s); }
+
+  /* Los fundadores, en grande */
+  .ab-people { margin-top: 96px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+  .ab-person { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 26px; align-items: start; padding: 28px; border-radius: 28px; background: var(--card); border: 1px solid var(--line); }
+  .ab-portrait { width: 190px; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 30%; border-radius: 20px; box-shadow: 0 18px 40px rgba(0, 0, 0, .4); }
+  .ab-body { display: flex; flex-direction: column; height: 100%; }
+  .ab-role { color: var(--node); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .ab-name { margin-top: 6px; font-size: clamp(28px, 2.8vw, 38px); font-weight: 800; letter-spacing: -.035em; }
+  .ab-bio { margin-top: 10px; color: var(--muted); font-size: 16.5px; }
+  .ab-off { margin-top: 20px; display: flex; align-items: center; gap: 18px; padding: 14px; border-radius: 18px; background: var(--bg); border: 1px solid var(--line); }
+  .ab-off img { flex: none; width: 66px; height: 88px; object-fit: cover; border-radius: 12px; transform: rotate(-3deg); box-shadow: 0 10px 24px rgba(0, 0, 0, .45); }
+  .ab-off-label { color: var(--faint); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .ab-off p:last-child { margin-top: 4px; color: var(--ink); font-size: 16px; }
+  .ab-link { margin-top: auto; padding-top: 24px; align-self: flex-start; font-weight: 600; color: var(--node); text-decoration: none; }
+  .ab-link:hover { text-decoration: underline; }
+
+  .ab-closing { margin-top: 110px; text-align: center; font-size: clamp(38px, 6vw, 80px); font-weight: 800; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
+  .ab-closing .accent { display: block; }
+
+  @media (max-width: 860px) {
+    .ab-line { grid-template-columns: 1fr; gap: 26px; }
+    .ab-line::before { top: 22px; bottom: 22px; left: 21px; right: auto; width: 2px; height: auto; background: repeating-linear-gradient(180deg, #b58cff 0 7px, transparent 7px 12px); transform-origin: top; }
+    .js .ab-line:not(.in)::before { transform: scaleY(0); }
+    .ab-step { display: grid; grid-template-columns: 44px 1fr; column-gap: 18px; }
+    .ab-step b { margin-top: 10px; }
+    .ab-step p { grid-column: 2; margin-top: 4px; }
+    .ab-people { grid-template-columns: 1fr; margin-top: 72px; }
+    .ab-person { grid-template-columns: 1fr; gap: 18px; padding: 22px; }
+    .ab-portrait { width: 120px; border-radius: 16px; }
+  }
+  @media (max-width: 600px) {
+    .ab-closing { margin-top: 80px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ab-line::before, .ab-line .ab-step { transition: none; }
+  }
+</style>
