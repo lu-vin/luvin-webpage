@@ -1,0 +1,58 @@
+---
+// Escena 1 de /product: el titular y un workflow vivo, con los valores viajando entre los pasos.
+import SceneCanvas from './SceneCanvas.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const s = strings[lang].pages.story.hero
+---
+
+<section class="st-hero">
+  <div class="st-hero-bg" aria-hidden="true"></div>
+  <div class="container st-hero-copy">
+    <p class="st-eyebrow">{s.eyebrow}</p>
+    <h1 class="st-title">{s.title1} <span class="accent">{s.title2}</span></h1>
+    <p class="st-lead">{s.lead}</p>
+  </div>
+  <div class="container st-hero-stage">
+    <SceneCanvas lang={lang} id="hero-w" variant="wide" label={s.label} packets values class="st-only-wide" />
+    <SceneCanvas lang={lang} id="hero-t" variant="tall" label={s.label} packets values class="st-only-tall" />
+  </div>
+</section>
+
+<style is:global>
+  .st-hero { position: relative; overflow: hidden; isolation: isolate; padding: 84px 0 96px; }
+  .st-hero-bg {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(900px 520px at 50% 8%, rgba(47, 143, 63, .22), transparent 70%),
+      radial-gradient(700px 420px at 50% 78%, rgba(181, 140, 255, .10), transparent 70%),
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .05) 1.2px, transparent 0) 0 0 / 28px 28px;
+    mask-image: linear-gradient(to bottom, #000 70%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  }
+  .st-hero-copy { text-align: center; display: grid; justify-items: center; }
+  .st-eyebrow { color: var(--node); font-size: 15px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .st-title { margin-top: 18px; font-size: clamp(46px, 7.4vw, 100px); font-weight: 800; letter-spacing: -.05em; line-height: .98; max-width: 12ch; }
+  .st-title .accent { display: inline-block; padding-bottom: .06em; }
+  .st-lead { margin-top: 28px; max-width: 700px; color: var(--muted); font-size: clamp(18px, 1.8vw, 22px); line-height: 1.5; text-wrap: balance; }
+  .st-hero-stage { margin-top: 56px; max-width: 1120px; }
+
+  /* La entrada: los pasos suben uno a uno y las líneas se dibujan. */
+  .js .st-hero .sc-node { animation: st-rise .9s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(.25s + var(--i) * .16s); }
+  .js .st-hero .sc-draw { animation: st-draw 1.1s cubic-bezier(.45, 0, .2, 1) both; animation-delay: calc(1s + var(--k) * .14s); }
+  .js .st-hero .st-title, .js .st-hero .st-lead, .js .st-hero .st-eyebrow { animation: st-rise .9s cubic-bezier(.2, .7, .2, 1) both; }
+  .js .st-hero .st-lead { animation-delay: .12s; }
+  @keyframes st-rise { from { opacity: 0; transform: translateY(28px); } }
+
+  @media (max-width: 600px) {
+    .st-hero { padding: 64px 0 56px; }
+    .st-hero-stage { margin-top: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .st-hero .sc-node, .js .st-hero .sc-draw, .js .st-hero .st-title, .js .st-hero .st-lead, .js .st-hero .st-eyebrow { animation: none; }
+  }
+</style>

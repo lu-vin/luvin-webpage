@@ -1,0 +1,32 @@
+---
+// Escena de /product: también es un cliente de APIs. Pestañas (AppTabs) con el request, Dev Tools,
+// ambientes, colecciones e importar, y debajo los tipos de autorización. Conserva el ancla #client
+// (Base.astro lleva ahí los enlaces viejos a /#client).
+import AppTabs from './AppTabs.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+const c = t.client
+const env = t.features.items.find((f) => f.icon === 'lock')!
+// Cada pestaña lleva el texto de su función, que ya existe en el sitio.
+const captions = [c.items[0].body, c.items[3].body, env.body, c.items[2].body, c.items[1].body]
+const tabs = t.pages.story.client.tabs.map((tab, i) => ({ ...tab, caption: captions[i] }))
+---
+
+<AppTabs lang={lang} id="client" kicker={c.kicker} title={c.title} lead={c.lead} tabs={tabs}>
+  <div class="cl-auth reveal">
+    <p class="cl-auth-title">{c.authTitle}</p>
+    <ul>{c.auths.map((a) => <li>{a}</li>)}</ul>
+  </div>
+</AppTabs>
+
+<style is:global>
+  .cl-auth { margin-top: 40px; text-align: center; }
+  .cl-auth-title { color: var(--faint); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .cl-auth ul { margin-top: 16px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .cl-auth li { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line-hi); background: var(--card); color: var(--ink); font: 600 14px/1.2 ui-monospace, 'SF Mono', Menlo, monospace; }
+</style>

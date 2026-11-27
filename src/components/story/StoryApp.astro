@@ -1,0 +1,17 @@
+---
+// Escena de /product: la app real, en grande, con pestañas (AppTabs). Conserva el ancla #design: el
+// correo de bienvenida enlaza ahí. El texto de cada pestaña ya existe en el sitio.
+import AppTabs from './AppTabs.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+const s = t.pages.story.app
+const captions = [t.showcase[0], t.showcase[1], { body: t.chains.pick.body, alt: t.chains.pick.alt }, t.showcase[2]]
+const tabs = s.tabs.map((tab, i) => ({ ...tab, caption: captions[i].body, alt: captions[i].alt }))
+---
+
+<AppTabs lang={lang} id="design" kicker={s.kicker} title={s.title} tabs={tabs} />

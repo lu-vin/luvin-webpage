@@ -1,0 +1,141 @@
+---
+// La app real, en grande: un marco que se endereza al hacer scroll y pestañas con los videos y las
+// capturas de la app (los mismos de la documentación, en el idioma de la página). Lo usan las escenas
+// "La app de verdad" (StoryApp) y "Cliente de APIs" (StoryClient). Puede haber varias en una página.
+import type { Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+  id: string
+  kicker: string
+  title: string
+  lead?: string
+  tabs: { label: string; media: string; video?: boolean; caption: string; alt: string }[]
+}
+const { lang, id, kicker, title, lead, tabs } = Astro.props
+const media = `/media/app/${lang}`
+---
+
+<section id={id} class="st-app">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{kicker}</p>
+      <h2 class="st-big">{title}</h2>
+      {lead && <p class="st-sub">{lead}</p>}
+    </div>
+    <div class="ap-tabs reveal" role="tablist">
+      {
+        tabs.map((tab, i) => (
+          <button type="button" role="tab" class="ap-tab" aria-selected={String(i === 0)} data-i={i}>
+            {tab.label}
+          </button>
+        ))
+      }
+    </div>
+    <div class="ap-tilt">
+      <div class="ap-frame">
+        <div class="ap-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="ap-screen">
+          {
+            tabs.map((tab, i) =>
+              tab.video ? (
+                <video
+                  class="ap-media"
+                  src={`${media}/${tab.media}.mp4`}
+                  poster={`${media}/${tab.media}.webp`}
+                  aria-label={tab.alt}
+                  muted
+                  loop
+                  playsinline
+                  preload={i === 0 ? 'metadata' : 'none'}
+                  hidden={i !== 0}
+                />
+              ) : (
+                <img class="ap-media" src={`${media}/${tab.media}.webp`} alt={tab.alt} width="1600" height="1000" loading="lazy" hidden={i !== 0} />
+              ),
+            )
+          }
+        </div>
+      </div>
+    </div>
+    <div class="ap-caps" aria-live="polite">
+      {tabs.map((tab, i) => <p class="ap-cap" hidden={i !== 0}>{tab.caption}</p>)}
+    </div>
+    <slot />
+  </div>
+</section>
+
+<script>
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+  document.querySelectorAll<HTMLElement>('.st-app').forEach((section) => {
+    const tabs = [...section.querySelectorAll<HTMLButtonElement>('.ap-tab')]
+    const media = [...section.querySelectorAll<HTMLVideoElement | HTMLImageElement>('.ap-media')]
+    const caps = [...section.querySelectorAll<HTMLElement>('.ap-cap')]
+    let inView = false
+    let current = 0
+    // Solo se reproduce el video de la pestaña abierta, y solo si está a la vista.
+    const playCurrent = () =>
+      media.forEach((m, i) => {
+        if (!(m instanceof HTMLVideoElement)) return
+        if (i === current && inView) void m.play().catch(() => {})
+        else m.pause()
+      })
+    function show(i: number) {
+      current = i
+      tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === i)))
+      media.forEach((m, k) => (m.hidden = k !== i))
+      caps.forEach((c, k) => (c.hidden = k !== i))
+      const v = media[i]
+      if (v instanceof HTMLVideoElement) v.currentTime = 0
+      playCurrent()
+    }
+    tabs.forEach((t, i) => t.addEventListener('click', () => show(i)))
+    new IntersectionObserver((entries) => {
+      inView = entries[0].isIntersecting
+      playCurrent()
+    }, { threshold: 0.3 }).observe(section.querySelector('.ap-frame')!)
+
+    // El marco se endereza mientras sube por la pantalla.
+    const tilt = section.querySelector<HTMLElement>('.ap-tilt')!
+    if (!reduced) {
+      let frame = 0
+      const update = () => {
+        frame = 0
+        const r = tilt.getBoundingClientRect()
+        const p = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.75)))
+        tilt.style.setProperty('--p', p.toFixed(3))
+      }
+      addEventListener('scroll', () => (frame ||= requestAnimationFrame(update)), { passive: true })
+      update()
+    }
+  })
+</script>
+
+<style is:global>
+  .st-app { padding: 140px 0 130px; overflow: hidden; background: radial-gradient(1100px 600px at 50% 60%, rgba(47, 143, 63, .12), transparent 70%); }
+  .ap-tabs { margin: 40px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: fit-content; max-width: 100%; padding: 5px; border-radius: 999px; background: var(--card); border: 1px solid var(--line-hi); }
+  .ap-tab { min-height: 40px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 15px/1 inherit; font-family: inherit; cursor: pointer; transition: background .25s, color .25s; }
+  .ap-tab[aria-selected='true'] { background: var(--brand); color: #fff; }
+  .ap-tilt { --p: 1; margin-top: 48px; perspective: 1600px; }
+  .ap-frame {
+    position: relative; max-width: 1120px; margin-inline: auto; padding: 0 12px 12px; border-radius: 24px;
+    background: linear-gradient(180deg, #1a261f, #0f1813); border: 1px solid #2f4237;
+    box-shadow: 0 60px 140px rgba(0, 0, 0, .6), 0 0 90px rgba(111, 207, 127, .10);
+    transform-origin: 50% 100%;
+    transform: rotateX(calc((1 - var(--p)) * 26deg)) scale(calc(.86 + var(--p) * .14));
+    opacity: calc(.35 + var(--p) * .65);
+  }
+  .ap-bar { display: flex; gap: 7px; padding: 14px 6px; }
+  .ap-bar span { width: 11px; height: 11px; border-radius: 50%; background: #2f4237; }
+  .ap-screen { border-radius: 14px; overflow: hidden; background: #fff; aspect-ratio: 16 / 10; }
+  .ap-media { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .ap-media[hidden] { display: none; }
+  .ap-caps { margin: 36px auto 0; max-width: 680px; text-align: center; color: var(--muted); font-size: 18px; min-height: 3.2em; }
+  @media (max-width: 600px) {
+    .st-app { padding: 88px 0 80px; }
+    .ap-frame { padding: 0 6px 6px; border-radius: 16px; }
+    .ap-bar { padding: 9px 4px; }
+    .ap-screen { border-radius: 10px; }
+    .ap-tab { min-height: 36px; padding: 0 12px; font-size: 13.5px; }
+  }
+</style>

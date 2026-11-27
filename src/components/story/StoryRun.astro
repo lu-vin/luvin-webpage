@@ -1,0 +1,101 @@
+---
+// Escena 3 de /product: la cadena se ejecuta al entrar en pantalla. Cada paso se enciende, los
+// valores viajan por las líneas y termina en un 201 gigante.
+import SceneCanvas from './SceneCanvas.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const s = strings[lang].pages.story.run
+---
+
+<section class="st-run">
+  <div class="container st-run-inner">
+    <h2 class="st-run-title">{s.title}</h2>
+    <p class="st-run-lead">{s.lead}</p>
+    <div class="st-run-stage">
+      <SceneCanvas lang={lang} id="run-w" variant="wide" label={s.label} status class="st-only-wide" />
+      <SceneCanvas lang={lang} id="run-t" variant="tall" label={s.label} status class="st-only-tall" />
+    </div>
+    <div class="st-result" aria-live="polite">
+      <p class="st-code"><span>{s.code}</span> {s.word}</p>
+      <p class="st-stats">{s.stats}</p>
+      <button type="button" class="btn btn-ghost st-again">↻ {s.again}</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Ejecuta la cadena (simulada) cuando la escena entra en pantalla, y otra vez con el botón.
+  const section = document.querySelector<HTMLElement>('.st-run')
+  if (section) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, reduced ? 60 : ms))
+    const status: Record<string, string> = { signIn: '200 OK · 142 ms', getCustomer: '200 OK · 96 ms', openAccount: '201 Created · 174 ms' }
+    let running = false
+    async function run() {
+      if (running) return
+      running = true
+      section!.classList.remove('st-done')
+      const scenes = [...section!.querySelectorAll<HTMLElement>('.sc')]
+      scenes.forEach((sc) => {
+        sc.querySelectorAll('.sc-node').forEach((n) => {
+          n.classList.remove('sc-on', 'sc-ok')
+          n.querySelector('.sc-status')!.textContent = ''
+        })
+        sc.querySelectorAll('.sc-wire').forEach((w) => w.classList.remove('lit'))
+      })
+      await sleep(400)
+      for (const step of ['signIn', 'getCustomer', 'openAccount']) {
+        scenes.forEach((sc) => sc.querySelector(`.sc-node[data-step="${step}"]`)!.classList.add('sc-on'))
+        await sleep(520)
+        scenes.forEach((sc) => {
+          const n = sc.querySelector<HTMLElement>(`.sc-node[data-step="${step}"]`)!
+          n.classList.replace('sc-on', 'sc-ok')
+          n.querySelector('.sc-status')!.textContent = status[step]
+          sc.querySelectorAll(`.sc-wire[data-from="${step}"]`).forEach((w) => {
+            w.classList.remove('lit')
+            void (w as HTMLElement).getBoundingClientRect()
+            w.classList.add('lit')
+          })
+        })
+        await sleep(step === 'openAccount' ? 300 : 820)
+      }
+      section!.classList.add('st-done')
+      running = false
+    }
+    new IntersectionObserver(
+      (entries, io) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect()
+          run()
+        }
+      },
+      { threshold: 0.45 },
+    ).observe(section.querySelector('.st-run-stage')!)
+    section.querySelector('.st-again')!.addEventListener('click', run)
+  }
+</script>
+
+<style is:global>
+  .st-run { position: relative; padding: 140px 0 120px; overflow: hidden; background: radial-gradient(1000px 600px at 50% 110%, rgba(47, 143, 63, .16), transparent 70%), #070c09; }
+  .st-run-inner { display: grid; justify-items: center; text-align: center; }
+  .st-run-title { font-size: clamp(56px, 10vw, 140px); font-weight: 800; letter-spacing: -.055em; line-height: .95; }
+  .st-run-lead { margin-top: 22px; max-width: 640px; color: var(--muted); font-size: clamp(18px, 1.8vw, 22px); text-wrap: balance; }
+  .st-run-stage { width: min(100%, 1120px); margin-top: 64px; }
+  .st-result { margin-top: 56px; display: grid; justify-items: center; gap: 10px; opacity: .14; transform: scale(.96); transition: opacity .8s, transform 1s cubic-bezier(.2, .7, .2, 1); }
+  .st-run.st-done .st-result { opacity: 1; transform: none; }
+  .st-code { font-size: clamp(64px, 11vw, 150px); font-weight: 800; letter-spacing: -.05em; line-height: 1; color: var(--ink); }
+  .st-code span {
+    background: linear-gradient(100deg, #9be7a6 0%, #6fcf7f 45%, #2f8f3f 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .st-stats { color: var(--muted); font: 600 clamp(14px, 1.4vw, 17px) / 1.4 ui-monospace, 'SF Mono', Menlo, monospace; }
+  .st-again { margin-top: 14px; }
+  @media (max-width: 600px) {
+    .st-run { padding: 88px 0 80px; }
+    .st-run-stage { margin-top: 40px; }
+  }
+</style>

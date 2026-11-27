@@ -1,0 +1,100 @@
+---
+// Escena de /product: local y privado. Un diagrama (tu equipo con Luvin, el llavero y el workspace;
+// una línea directa a tus APIs; los servidores de Luvin, que no existen) y cuatro puntos. Todo lo que
+// dice está en la app hoy: app ADR 0002, 0005, 0040 y 0044.
+import Icon from '../Icon.astro'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const s = strings[lang].pages.story.security
+---
+
+<section id="security" class="st-security">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{s.kicker}</p>
+      <h2 class="st-big">{s.title}</h2>
+      <p class="st-sub">{s.lead}</p>
+    </div>
+
+    <div class="sec-map reveal" aria-hidden="true">
+      <div class="sec-box sec-pc">
+        <p class="sec-label">{s.computer}</p>
+        <div class="sec-app"><img src="/logo.svg" width="26" height="26" alt="" />{s.app}</div>
+        <div class="sec-row">
+          <div class="sec-chip sec-key"><span class="sec-ico"><Icon name="lock" /></span><b>{s.keychain}</b><small>{s.keychainNote}</small></div>
+          <div class="sec-chip"><span class="sec-ico"><Icon name="git" /></span><b>{s.workspace}</b><small>{s.workspaceNote}</small></div>
+        </div>
+      </div>
+      <div class="sec-wire"><i></i></div>
+      <div class="sec-box sec-apis">
+        <p class="sec-label">{s.apis}</p>
+        <code>GET /customers/…</code>
+        <code>POST /accounts</code>
+      </div>
+      <div class="sec-box sec-none">
+        <p class="sec-label">{s.servers}</p>
+        <p class="sec-x">✕ {s.none}</p>
+      </div>
+    </div>
+
+    <ul class="sec-points">
+      {
+        s.points.map((p, i) => (
+          <li class="reveal" style={`transition-delay:${i * 0.07}s`}>
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style is:global>
+  .st-security { padding: 140px 0 130px; background: var(--bg-alt); border-block: 1px solid var(--line); }
+  .sec-map { margin: 64px auto 0; max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1.4fr) 120px minmax(0, .9fr); grid-template-rows: auto auto; gap: 18px 0; align-items: center; }
+  .sec-box { border-radius: 22px; padding: 22px; border: 1px solid var(--line-hi); background: var(--card); }
+  .sec-label { color: var(--faint); font-size: 12.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .sec-pc { grid-row: 1 / 3; background: radial-gradient(500px 260px at 0% 0%, rgba(47, 143, 63, .14), transparent 70%), var(--card); border-color: rgba(47, 143, 63, .45); }
+  .sec-app { margin-top: 14px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 14px; background: #0e1712; border: 1px solid var(--line-hi); font-size: 18px; font-weight: 800; }
+  .sec-row { margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .sec-chip { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; padding: 14px; border-radius: 14px; background: #0e1712; border: 1px solid var(--line-hi); }
+  .sec-chip b { font-size: 15px; }
+  .sec-chip small { grid-column: 2; color: var(--muted); font-size: 13px; }
+  .sec-ico { grid-row: 1 / 3; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--node); background: rgba(111, 207, 127, .08); border: 1px solid rgba(111, 207, 127, .18); }
+  .sec-key { border-color: rgba(111, 207, 127, .5); box-shadow: 0 0 30px rgba(47, 143, 63, .18); }
+  .sec-wire { position: relative; height: 2px; grid-row: 1; background: repeating-linear-gradient(90deg, #b58cff 0 7px, transparent 7px 12px); }
+  .sec-wire i { position: absolute; top: 50%; left: 0; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: #b58cff; box-shadow: 0 0 12px #b58cff; animation: sec-pulse 2.2s cubic-bezier(.45, 0, .2, 1) infinite; }
+  @keyframes sec-pulse { 0% { left: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 12px); opacity: 0; } }
+  .sec-apis { grid-row: 1; display: grid; gap: 8px; }
+  .sec-apis code { padding: 8px 12px; border-radius: 10px; background: #0e1712; border: 1px solid var(--line-hi); font: 600 13px/1.2 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink); }
+  .sec-none { grid-column: 3; grid-row: 2; background: transparent; border-style: dashed; opacity: .75; }
+  .sec-x { margin-top: 8px; color: #ff8a8d; font-weight: 700; }
+  .sec-points { margin-top: 64px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 30px; }
+  .sec-points h3 { font-size: 20px; letter-spacing: -.02em; }
+  .sec-points p { margin-top: 10px; color: var(--muted); font-size: 16px; }
+
+  @media (max-width: 960px) {
+    .sec-points { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 760px) {
+    .sec-map { grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
+    .sec-pc, .sec-apis, .sec-none { grid-row: auto; grid-column: auto; }
+    .sec-wire { grid-row: auto; justify-self: center; width: 2px; height: 56px; background: repeating-linear-gradient(180deg, #b58cff 0 7px, transparent 7px 12px); }
+    .sec-wire i { left: 50% !important; margin-left: -6px; top: 0; margin-top: 0; animation-name: sec-pulse-v; }
+    @keyframes sec-pulse-v { 0% { top: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: calc(100% - 12px); opacity: 0; } }
+    .sec-none { margin-top: 14px; }
+    .sec-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .st-security { padding: 88px 0 80px; }
+    .sec-points { grid-template-columns: 1fr; gap: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sec-wire i { animation: none; display: none; }
+  }
+</style>
