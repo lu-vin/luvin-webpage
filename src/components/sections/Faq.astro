@@ -1,4 +1,7 @@
 ---
+// Preguntas frecuentes. Como página: el título grande y centrado, y una sola columna de preguntas
+// separadas por líneas, en letra grande. Los estilos van con .faq-page para no tocar las preguntas de
+// la página de precios, que usan las clases .faq.
 import { strings, type Lang } from '../../i18n/strings'
 
 interface Props {
@@ -12,13 +15,13 @@ const t = strings[lang]
 ---
 
 <!-- Preguntas -->
-<section id="faq" class={`section alt${page ? ' page-top' : ''}`}>
-  <div class="container faq">
-    <div class="faq-head reveal">
+<section id="faq" class={`section${page ? ' page-top faq-page' : ' alt'}`}>
+  <div class={`container ${page ? 'faq-page-inner' : 'faq'}`}>
+    <div class={`${page ? 'center narrow' : 'faq-head'} reveal`}>
       <p class="kicker">{t.faq.kicker}</p>
-      <Heading>{t.faq.title}</Heading>
+      <Heading class={page ? 'st-big' : undefined}>{t.faq.title}</Heading>
     </div>
-    <div class="faq-list reveal">
+    <div class={`${page ? 'faq-rows' : 'faq-list'} reveal`}>
       {
         t.faq.items.map((f, i) => (
           <details open={i === 0}>
@@ -30,3 +33,32 @@ const t = strings[lang]
     </div>
   </div>
 </section>
+
+<style is:global>
+  .section.faq-page .st-big { font-size: clamp(44px, 7vw, 96px); letter-spacing: -.045em; line-height: 1; margin-bottom: 0; }
+  .faq-rows { max-width: 860px; margin: 64px auto 0; border-top: 1px solid var(--line-hi); }
+  .faq-rows details { border-bottom: 1px solid var(--line-hi); }
+  .faq-rows summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 4px;
+    list-style: none; cursor: pointer; font-size: clamp(19px, 2vw, 24px); font-weight: 700; letter-spacing: -.02em; transition: color .2s;
+  }
+  .faq-rows summary::-webkit-details-marker { display: none; }
+  .faq-rows summary:hover { color: var(--node); }
+  .faq-rows summary::after {
+    content: '+'; flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--line-hi); color: var(--node); font-size: 22px; font-weight: 400; transition: transform .3s cubic-bezier(.2, .7, .2, 1), background .2s;
+  }
+  .faq-rows details[open] summary::after { transform: rotate(45deg); background: rgba(47, 143, 63, .15); }
+  .faq-rows details p { max-width: 720px; padding: 0 4px 30px; color: var(--muted); font-size: 18px; line-height: 1.65; }
+  .faq-rows details[open] p { animation: faq-in .45s cubic-bezier(.2, .7, .2, 1); }
+  @keyframes faq-in { from { opacity: 0; transform: translateY(-8px); } }
+  @media (max-width: 600px) {
+    .faq-rows { margin-top: 44px; }
+    .faq-rows summary { padding: 22px 2px; }
+    .faq-rows summary::after { width: 30px; height: 30px; font-size: 19px; }
+    .faq-rows details p { font-size: 16.5px; padding-bottom: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-rows details[open] p { animation: none; }
+  }
+</style>
