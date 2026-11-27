@@ -18,6 +18,7 @@ npm run preview   # sirve dist/ para revisarlo
 | Textos en inglés y español | `src/i18n/strings.ts` (mismas claves en los dos idiomas) |
 | Secciones de la página (portada, problema, cómo funciona, cadenas reales, cliente de APIs, comparación, funciones, para quién es, preguntas, lista de espera) | `src/components/Landing.astro` |
 | El juego de la portada (conectar, ejecutar y romper un workflow, simulado en el navegador) | `src/components/sections/ChainGame.astro`, textos en `strings.ts`, clave `game` |
+| Las escenas animadas (producto, el problema del inicio, comparar) y el lienzo de workflow que comparten | `src/components/story/` (el lienzo es `SceneCanvas.astro`; su geometría, `src/lib/scene.ts`) |
 | Iconos de las tarjetas | `src/components/Icon.astro` |
 | Cabecera, pie y etiquetas de SEO/redes | `src/layouts/Base.astro` |
 | Colores y estilos | `src/styles/global.css` |
@@ -28,9 +29,17 @@ npm run preview   # sirve dist/ para revisarlo
 
 Las imágenes vienen de los otros repos:
 
-- El video de la portada (`public/media/promo.mp4`, con su póster `promo-poster.jpg`) es `marketing/promo2/luvin-promo.mp4` del repo de Luvin (2:02, en inglés, para los dos idiomas), comprimido para la web: `ffmpeg -i luvin-promo.mp4 -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart promo.mp4`. Cloudflare no acepta archivos de más de 25 MB.
-- La animación A→B→C (`chain-dark.svg`) es la de `docs/readme/` del repo de Luvin.
+- Los videos de la portada (`public/media/hero-en.mp4` y `hero-es.mp4`, uno por idioma, con sus pósters `hero-poster-<idioma>.jpg`) son `videos/web/luvin-web-<idioma>.mp4` y `poster-<idioma>.jpg` de `luvin-marketing`, tal cual: ya vienen en H.264 con el índice al principio (faststart). Cloudflare no acepta archivos de más de 25 MiB; el de español pesa 24,2 MiB, así que si crece hay que recomprimirlo.
 - Las capturas y los videos cortos de la app (`public/media/app/<idioma>/`) son los de la documentación (`luvin-docs/public/media/<idioma>/`), que se rehacen con `npm run media` allá. Las del correo (`public/media/email/`) son las mismas, en JPG de 1072 px de ancho.
+
+## La comparativa se revisa cada 3 meses
+
+La página **Comparar** (`/compare/`, `/compare/postman-flows/`) y la escena «La misma cadena. De dos formas» afirman cosas sobre otros productos. Tienen que seguir siendo ciertas:
+
+- **Cada 3 meses** (febrero, mayo, agosto y noviembre) se revisa cada fila contra la documentación pública de Postman, Postman Flows, Bruno e Insomnia, y la sintaxis de los scripts de `src/components/sections/CompareSplit.astro` (`pm.*` y `bru.*`).
+- Lo que cambió se corrige en `src/i18n/strings.ts` (claves `compare` y `flows`), en los dos idiomas, y se actualiza el mes de la nota (`compare.note`: «a noviembre de 2026»).
+- También se revisa cuando uno de esos productos anuncia algo grande. Si una fila ya no se puede sostener, se quita: nunca se deja una afirmación vieja.
+- Lo que se dice de Luvin tiene que existir en la app publicada (ver el comentario al inicio de `strings.ts`).
 
 ## Precios y páginas legales (solo en desarrollo)
 
