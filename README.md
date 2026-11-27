@@ -30,7 +30,7 @@ npm run preview   # sirve dist/ para revisarlo
 Las imágenes vienen de los otros repos:
 
 - Los videos de la portada (`public/media/hero-en.mp4` y `hero-es.mp4`, uno por idioma, con sus pósters `hero-poster-<idioma>.jpg`) son `videos/web/luvin-web-<idioma>.mp4` y `poster-<idioma>.jpg` de `luvin-marketing`, tal cual: ya vienen en H.264 con el índice al principio (faststart). Cloudflare no acepta archivos de más de 25 MiB; el de español pesa 24,2 MiB, así que si crece hay que recomprimirlo.
-- Las capturas y los videos cortos de la app (`public/media/app/<idioma>/`) son los de la documentación (`luvin-docs/public/media/<idioma>/`), que se rehacen con `npm run media` allá. Las del correo (`public/media/email/`) son las mismas, en JPG de 1072 px de ancho.
+- Las capturas y los videos cortos de la app (`public/media/app/<idioma>/`) se hacen con los scripts de `luvin-docs` (`scripts/capture.mjs` y `scripts/convert.mjs`) contra la **última versión publicada** de la app (hoy v0.2.0-beta.13), nunca contra main: el sitio solo muestra lo que ya salió. Escenas: `pokedex requests collection lists-new clip-list-pick-new clip-design-workflow clip-run-cases`, en `en` y `es`. Las del correo (`public/media/email/`) son las mismas, en JPG de 1072 px de ancho.
 
 ## La comparativa se revisa cada 3 meses
 
