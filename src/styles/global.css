@@ -161,15 +161,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   position: relative; display: grid; place-items: center; width: 42px; height: 42px;
   border-radius: 50%; background: var(--brand); color: #fff; font-weight: 800; box-shadow: 0 0 0 6px var(--bg-alt), 0 0 24px rgba(47, 143, 63, .5);
 }
-.showcase { margin-top: 104px; display: grid; gap: 104px; }
-.show-row { display: grid; grid-template-columns: 1fr 1.55fr; gap: 56px; align-items: center; }
-.show-row.reverse { grid-template-columns: 1.55fr 1fr; }
-.show-row.reverse .show-copy { order: 2; }
-.show-num { display: block; color: var(--node); font: 700 14px/1 ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: .08em; margin-bottom: 14px; }
-.show-copy h3 { font-size: clamp(26px, 2.8vw, 34px); font-weight: 800; }
-.show-copy p { margin-top: 16px; color: var(--muted); font-size: 18px; }
-.shot { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-hi); background: #fff; box-shadow: 0 30px 80px rgba(0, 0, 0, .45), 0 0 60px rgba(111, 207, 127, .07); }
-.shot img, .shot video { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
 
 /* Cadenas reales: mosaico */
 .bento { margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -191,15 +182,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .tile-small { grid-column: span 1; }
 
 /* Cliente de APIs */
-.client { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
-.client-list { margin-top: 36px; display: grid; gap: 22px; }
-.client-list li { display: flex; gap: 16px; }
-.client-list .ico { margin: 0; }
-.client-list p { margin-top: 6px; color: var(--muted); font-size: 16px; }
-.client-media { position: relative; padding: 0 0 56px 56px; }
-.client-media img { height: auto; border-radius: 14px; border: 1px solid var(--line-hi); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
-.shot-back { position: absolute; left: 0; top: 56px; width: 82%; opacity: .55; transform: rotate(-2deg); filter: saturate(.8); }
-.shot-front { position: relative; width: 100%; }
 .auth { margin-top: 72px; text-align: center; }
 .auth-title { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 700; font-size: 18px; }
 .auth-title .icon { color: var(--node); }
@@ -245,13 +227,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .grid-3 { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .grid-2 { margin-top: 56px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
 .who { border-left: 3px solid var(--brand); }
-.founders { max-width: 880px; margin-left: auto; margin-right: auto; }
-.founder { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
-.founder-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand); margin-bottom: 10px; }
-.founder-role { color: var(--node); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
-.founder-off { color: var(--muted); font-size: 15px; }
-.founder-link { margin-top: 10px; font-weight: 600; color: var(--brand); text-decoration: none; }
-.founder-link:hover { text-decoration: underline; }
 
 /* Preguntas */
 .faq { display: grid; grid-template-columns: .8fr 1.6fr; gap: 64px; align-items: start; }
@@ -312,9 +287,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .header-actions .lang { display: none; }
 }
 @media (max-width: 960px) {
-  .show-row, .show-row.reverse, .client, .faq { grid-template-columns: 1fr; }
-  .show-row.reverse .show-copy { order: 0; }
-  .show-row, .client { gap: 36px; }
+  .faq { grid-template-columns: 1fr; }
   .faq { gap: 32px; }
   .faq-head { position: static; }
   .steps { grid-template-columns: repeat(2, 1fr); }
@@ -336,8 +309,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .tile-pick, .tile-deps { grid-column: auto; }
   .tile { padding: 24px; }
   .tile-deps .tile-media { margin-right: -24px; margin-bottom: -24px; }
-  .client-media { padding: 0; }
-  .shot-back { display: none; }
   .wl-grid { grid-template-columns: 1fr; }
   .wl-form { padding: 20px; }
   .header-actions .btn-sm { display: none; }
@@ -421,3 +392,22 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .highlight:hover { border-color: var(--brand); transform: translateY(-2px); }
 .highlight-link { margin-top: auto; padding-top: 8px; color: var(--brand); font-weight: 600; }
 .footer-site { margin-top: 6px; }
+
+/* Titulares grandes de las escenas (producto, comparar, nosotros) y su entrada. */
+.st-big { font-size: clamp(40px, 6.4vw, 84px); font-weight: 800; letter-spacing: -.045em; line-height: 1; }
+.st-sub { margin-top: 22px; color: var(--muted); font-size: clamp(18px, 1.8vw, 22px); text-wrap: balance; }
+
+/* El mismo lenguaje en el resto: Explora y Para quién es (inicio), y Luvin vs Postman Flows. */
+#explore h2, #who h2 { font-size: clamp(36px, 5.2vw, 64px); letter-spacing: -.04em; line-height: 1.02; }
+.highlights { margin-top: 56px; gap: 18px; }
+.highlights .highlight { min-height: 280px; padding: 34px; border-radius: 26px; background: radial-gradient(500px 260px at 0% 0%, rgba(47, 143, 63, .12), transparent 70%), var(--card); }
+.highlights .highlight h3 { font-size: clamp(24px, 2.3vw, 30px); font-weight: 800; letter-spacing: -.025em; }
+.highlights .highlight p { font-size: 17px; }
+.highlights .highlight-link { font-size: 17px; color: var(--node); }
+.highlights .highlight:hover .highlight-link { text-decoration: underline; }
+#who .grid-2 { gap: 18px; }
+#who .who { border-left: 0; padding: 32px 34px; border-radius: 26px; background: radial-gradient(500px 240px at 100% 0%, rgba(181, 140, 255, .07), transparent 70%), var(--card); }
+#who .who h3 { font-size: clamp(22px, 2.1vw, 27px); font-weight: 800; letter-spacing: -.02em; }
+#who .who p { font-size: 17px; }
+.vs-title { font-size: clamp(34px, 5.4vw, 68px); letter-spacing: -.04em; gap: 16px; }
+.vs-title img { width: 48px; height: 48px; }
