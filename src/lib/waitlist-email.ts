@@ -68,11 +68,11 @@ export function welcomeEmail(s: Signup, site: string, assets: string = site) {
 
     ${h2(e.howTitle)}
     ${list(t.how.steps, true)}
-    <a href="${home}#how"><img src="${img('builder')}" width="536" alt="${esc(t.showcase[0]!.alt)}" style="display:block;width:100%;height:auto;margin:6px 0 0;border:1px solid ${C.line};border-radius:10px;"></a>
+    <a href="${home}product/#design"><img src="${img('builder')}" width="536" alt="${esc(t.showcase[0]!.alt)}" style="display:block;width:100%;height:auto;margin:6px 0 0;border:1px solid ${C.line};border-radius:10px;"></a>
 
     ${h2(e.featuresTitle)}
     ${list(t.features.items)}
-    <a href="${home}#features"><img src="${img('results')}" width="536" alt="${esc(t.showcase[1]!.alt)}" style="display:block;width:100%;height:auto;margin:6px 0 0;border:1px solid ${C.line};border-radius:10px;"></a>
+    <a href="${home}product/#design"><img src="${img('results')}" width="536" alt="${esc(t.showcase[1]!.alt)}" style="display:block;width:100%;height:auto;margin:6px 0 0;border:1px solid ${C.line};border-radius:10px;"></a>
 
     ${h2(e.whoTitle)}
     ${list(t.who.items)}

@@ -1,0 +1,29 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+---
+
+<!-- Para quién es -->
+<section id="who" class="section alt">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.who.kicker}</p>
+      <h2>{t.who.title}</h2>
+    </div>
+    <div class="grid-2">
+      {
+        t.who.items.map((w) => (
+          <div class="card who reveal">
+            <h3>{w.title}</h3>
+            <p>{w.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

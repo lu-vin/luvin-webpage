@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro'
+import Compare from '../../components/sections/Compare.astro'
+import Waitlist from '../../components/sections/Waitlist.astro'
+import { strings } from '../../i18n/strings'
+
+const lang = 'en'
+const t = strings[lang]
+const meta = t.pages.compare
+---
+
+<Base lang={lang} path="compare/" title={meta.metaTitle} description={meta.metaDescription}>
+  <Compare lang={lang} page />
+  <Waitlist lang={lang} />
+</Base>

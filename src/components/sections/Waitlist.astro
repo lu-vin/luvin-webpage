@@ -1,0 +1,85 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+---
+
+<!-- Lista de espera -->
+<section id="waitlist" class="section waitlist">
+  <div class="container narrow center">
+    <img class="wl-logo" src="/logo.svg" width="64" height="64" alt="" />
+    <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>{t.hero.eyebrow}</p>
+    <h2>{t.waitlist.title}</h2>
+    <p class="body">{t.waitlist.lead}</p>
+    <form class="wl-form" data-thanks={t.waitlist.thanks} data-error={t.waitlist.error} data-soon={t.waitlist.soon} data-sending={t.waitlist.sending}>
+      <input type="hidden" name="lang" value={lang} />
+      <div class="wl-hp" aria-hidden="true">
+        <label for="wl-website">Website</label>
+        <input id="wl-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <div class="wl-grid">
+        <label class="wl-field">
+          <span>{t.waitlist.name}</span>
+          <input name="name" type="text" required maxlength="120" autocomplete="name" placeholder={t.waitlist.namePlaceholder} />
+        </label>
+        <label class="wl-field">
+          <span>{t.waitlist.label}</span>
+          <input name="email" type="email" required maxlength="254" autocomplete="email" placeholder={t.waitlist.placeholder} />
+        </label>
+        <label class="wl-field">
+          <span>{t.waitlist.company}</span>
+          <input name="company" type="text" maxlength="160" autocomplete="organization" placeholder={t.waitlist.companyPlaceholder} />
+        </label>
+        <label class="wl-field">
+          <span>{t.waitlist.role}</span>
+          <select name="role" required>
+            <option value="" disabled selected>{t.waitlist.rolePlaceholder}</option>
+            {t.waitlist.roles.map((r) => <option value={r}>{r}</option>)}
+          </select>
+        </label>
+        <label class="wl-field wl-wide">
+          <span>{t.waitlist.useCase}</span>
+          <textarea name="useCase" rows="3" maxlength="2000" placeholder={t.waitlist.useCasePlaceholder}></textarea>
+        </label>
+      </div>
+      <button class="btn btn-primary" type="submit">{t.waitlist.button}</button>
+      <p class="wl-privacy">{t.waitlist.privacy}</p>
+    </form>
+    <p class="wl-status" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<script>
+  // Envía el formulario a /api/waitlist, que manda el correo de bienvenida con todo sobre Luvin.
+  const form = document.querySelector<HTMLFormElement>('.wl-form')
+  const status = document.querySelector<HTMLElement>('.wl-status')
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    if (!status) return
+    const { thanks, error, soon, sending } = form.dataset
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')
+    if (button) button.disabled = true
+    status.dataset.state = ''
+    status.textContent = sending ?? ''
+    try {
+      const res = await fetch('/api/waitlist', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.ok) {
+        status.textContent = thanks ?? ''
+        form.reset()
+      } else {
+        status.dataset.state = data.error === 'not_configured' ? '' : 'error'
+        status.textContent = (data.error === 'not_configured' ? soon : error) ?? ''
+      }
+    } catch {
+      status.dataset.state = 'error'
+      status.textContent = error ?? ''
+    } finally {
+      if (button) button.disabled = false
+    }
+  })
+</script>

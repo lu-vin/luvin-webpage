@@ -1,0 +1,54 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+import Icon from '../Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+// Capturas y videos de la app actual (los mismos de la documentación), en el idioma de la página.
+const app = `/media/app/${lang}`
+---
+
+<!-- Cadenas reales -->
+<section id="chains" class="section">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.chains.kicker}</p>
+      <h2>{t.chains.title}</h2>
+      <p class="body">{t.chains.lead}</p>
+    </div>
+    <div class="bento">
+      <article class="tile tile-pick reveal">
+        <div class="tile-copy">
+          <p class="tag"><Icon name="list" size={16} />{t.chains.pick.tag}</p>
+          <h3>{t.chains.pick.title}</h3>
+          <p>{t.chains.pick.body}</p>
+        </div>
+        <div class="tile-media">
+          <video data-autoplay src={`${app}/list-pick.mp4`} poster={`${app}/list-pick.webp`} aria-label={t.chains.pick.alt} muted loop playsinline preload="none"></video>
+        </div>
+      </article>
+      <article class="tile tile-deps reveal">
+        <div class="tile-copy">
+          <p class="tag"><Icon name="nest" size={16} />{t.chains.deps.tag}</p>
+          <h3>{t.chains.deps.title}</h3>
+          <p>{t.chains.deps.body}</p>
+        </div>
+        <div class="tile-media crop">
+          <img src={`${app}/builder-depends.webp`} alt={t.chains.deps.alt} width="1600" height="1000" loading="lazy" />
+        </div>
+      </article>
+      {
+        t.chains.items.map((c) => (
+          <article class="tile tile-small reveal">
+            <span class="ico"><Icon name={c.icon} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

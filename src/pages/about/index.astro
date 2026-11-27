@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro'
+import Founders from '../../components/sections/Founders.astro'
+import Waitlist from '../../components/sections/Waitlist.astro'
+import { strings } from '../../i18n/strings'
+
+const lang = 'en'
+const t = strings[lang]
+const meta = t.pages.about
+---
+
+<Base lang={lang} path="about/" title={meta.metaTitle} description={meta.metaDescription}>
+  <Founders lang={lang} page />
+  <Waitlist lang={lang} />
+</Base>

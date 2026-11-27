@@ -1,0 +1,32 @@
+---
+// Inicio: lleva a cada página del sitio (Producto, Comparar, Nosotros).
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+const home = lang === 'en' ? '/' : '/es/'
+---
+
+<!-- Explora -->
+<section id="explore" class="section">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.highlights.kicker}</p>
+      <h2>{t.highlights.title}</h2>
+    </div>
+    <div class="grid-3 highlights">
+      {
+        t.highlights.items.map((h) => (
+          <a class="card highlight reveal" href={`${home}${h.page}/`}>
+            <h3>{h.title}</h3>
+            <p>{h.body}</p>
+            <span class="highlight-link">{h.link} →</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

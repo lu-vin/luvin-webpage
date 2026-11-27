@@ -1,0 +1,30 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = strings[lang]
+---
+
+<!-- Cómo funciona -->
+<section id="how" class="section alt">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.how.kicker}</p>
+      <h2>{t.how.title}</h2>
+    </div>
+    <ol class="steps reveal">
+      {
+        t.how.steps.map((s, i) => (
+          <li class="step">
+            <span class="step-num">{i + 1}</span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

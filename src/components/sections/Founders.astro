@@ -1,0 +1,39 @@
+---
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+  /** Es la página principal: el título va como h1 y la sección arranca bajo la cabecera. */
+  page?: boolean
+}
+const { lang, page = false } = Astro.props
+const Heading = page ? 'h1' : 'h2'
+const t = strings[lang]
+---
+
+<!-- Founders -->
+<section id="founders" class={`section${page ? ' page-top' : ''}`}>
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.founders.kicker}</p>
+      <Heading>{t.founders.title}</Heading>
+      <p class="body">{t.founders.story}</p>
+    </div>
+    <div class="grid-2 founders">
+      {
+        t.founders.people.map((f) => (
+          <article class="card founder reveal">
+            <img class="founder-photo" src={f.photo} width="160" height="160" alt={f.name} loading="lazy" decoding="async" />
+            <h3>{f.name}</h3>
+            <p class="founder-role">{f.role}</p>
+            <p>{f.bio}</p>
+            <p class="founder-off">{f.off}</p>
+            <a class="founder-link" href={f.linkedin} target="_blank" rel="noopener noreferrer">
+              {t.founders.linkedin} ↗
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
