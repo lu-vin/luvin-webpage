@@ -305,6 +305,33 @@ const tools = [
   </div>
 </section>
 
+<!-- Founders -->
+<section id="founders" class="section">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{t.founders.kicker}</p>
+      <h2>{t.founders.title}</h2>
+      <p class="body">{t.founders.story}</p>
+    </div>
+    <div class="grid-2 founders">
+      {
+        t.founders.people.map((f) => (
+          <article class="card founder reveal">
+            <img class="founder-photo" src={f.photo} width="160" height="160" alt={f.name} loading="lazy" decoding="async" />
+            <h3>{f.name}</h3>
+            <p class="founder-role">{f.role}</p>
+            <p>{f.bio}</p>
+            <p class="founder-off">{f.off}</p>
+            <a class="founder-link" href={f.linkedin} target="_blank" rel="noopener noreferrer">
+              {t.founders.linkedin} ↗
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
 <!-- Lista de espera -->
 <section id="waitlist" class="section waitlist">
   <div class="container narrow center">
