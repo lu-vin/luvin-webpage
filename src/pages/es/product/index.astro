@@ -1,11 +1,17 @@
 ---
 import Base from '../../../layouts/Base.astro'
-import Showcase from '../../../components/sections/Showcase.astro'
 import Chains from '../../../components/sections/Chains.astro'
-import Client from '../../../components/sections/Client.astro'
 import Features from '../../../components/sections/Features.astro'
 import Waitlist from '../../../components/sections/Waitlist.astro'
-import PageHead from '../../../components/PageHead.astro'
+import StoryHero from '../../../components/story/StoryHero.astro'
+import StoryBuild from '../../../components/story/StoryBuild.astro'
+import StoryRun from '../../../components/story/StoryRun.astro'
+import StoryCases from '../../../components/story/StoryCases.astro'
+import StoryVerdict from '../../../components/story/StoryVerdict.astro'
+import StoryStandards from '../../../components/story/StoryStandards.astro'
+import StoryApp from '../../../components/story/StoryApp.astro'
+import StorySecurity from '../../../components/story/StorySecurity.astro'
+import StoryClient from '../../../components/story/StoryClient.astro'
 import { strings } from '../../../i18n/strings'
 
 const lang = 'es'
@@ -14,10 +20,16 @@ const meta = t.pages.product
 ---
 
 <Base lang={lang} path="product/" title={meta.metaTitle} description={meta.metaDescription}>
-  <PageHead kicker={t.pages.product.kicker} title={t.pages.product.title} lead={t.pages.product.lead} />
-  <Showcase lang={lang} />
+  <StoryHero lang={lang} />
+  <StoryBuild lang={lang} />
+  <StoryRun lang={lang} />
+  <StoryCases lang={lang} />
+  <StoryVerdict lang={lang} />
+  <StoryStandards lang={lang} />
+  <StorySecurity lang={lang} />
+  <StoryApp lang={lang} />
   <Chains lang={lang} />
-  <Client lang={lang} />
+  <StoryClient lang={lang} />
   <Features lang={lang} />
   <Waitlist lang={lang} />
 </Base>

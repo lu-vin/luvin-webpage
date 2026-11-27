@@ -1,0 +1,117 @@
+---
+// Escena 6 de /product: el pilar de Luvin, los estándares. Tres ideas y, abajo, un contrato que
+// cambia: el campo `id` pasa a llamarse `customer_id` y el paso que lo usaba se pone rojo.
+import SceneCanvas from './SceneCanvas.astro'
+import { layout } from '../../lib/scene'
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const s = strings[lang].pages.story.standards
+const u = (n: number) => `calc(var(--u) * ${n})`
+// La alerta va sobre el paso que se rompe.
+const badge = (variant: 'wide' | 'tall') => {
+  const b = layout(variant).boxes.find((x) => x.id === 'openAccount')!
+  return `left:${u(b.x + b.w / 2)}; top:${u(b.y - 6)}`
+}
+---
+
+<section class="st-standards">
+  <div class="container">
+    <div class="center narrow reveal">
+      <p class="kicker">{s.kicker}</p>
+      <h2 class="st-big">{s.title}</h2>
+    </div>
+    <ul class="sd-points">
+      {
+        s.points.map((p, i) => (
+          <li class="reveal" style={`transition-delay:${i * 0.08}s`}>
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="sd-demo">
+      <div class="sd-diff reveal" aria-hidden="true">
+        <div class="sd-diff-bar"><span></span><span></span><span></span><b>bank.openapi.yaml</b></div>
+        <pre><span>/customers/&#123;customerId&#125;:</span>
+<span>  get:</span>
+<span>    responses:</span>
+<span>      '200':</span>
+<span>        properties:</span>
+<span class="sd-del">-         id: &#123; type: string &#125;</span>
+<span class="sd-add">+         customer_id: &#123; type: string &#125;</span>
+<span>          status: &#123; type: string &#125;</span></pre>
+      </div>
+      <div class="sd-canvas">
+        <SceneCanvas lang={lang} id="sd-w" variant="wide" label={s.label} values class="st-only-wide">
+          <span class="sd-badge" style={badge('wide')}>⚠ {s.breaks}</span>
+        </SceneCanvas>
+        <SceneCanvas lang={lang} id="sd-t" variant="tall" label={s.label} values class="st-only-tall">
+          <span class="sd-badge" style={badge('tall')}>⚠ {s.breaks}</span>
+        </SceneCanvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Al entrar en pantalla, el contrato cambia y el workflow muestra lo que rompe.
+  const demo = document.querySelector<HTMLElement>('.sd-demo')
+  if (demo) {
+    new IntersectionObserver(
+      (entries, io) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect()
+          setTimeout(() => demo.classList.add('sd-on'), 500)
+        }
+      },
+      { threshold: 0.45 },
+    ).observe(demo)
+  }
+</script>
+
+<style is:global>
+  .st-standards { padding: 140px 0 130px; }
+  .sd-points { margin-top: 64px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px; }
+  .sd-points h3 { font-size: 22px; letter-spacing: -.02em; }
+  .sd-points p { margin-top: 10px; color: var(--muted); font-size: 16.5px; }
+  .sd-demo { margin-top: 72px; display: grid; justify-items: center; gap: 40px; }
+  .sd-diff { width: min(100%, 560px); border-radius: 16px; overflow: hidden; background: #0b120e; border: 1px solid var(--line-hi); box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
+  .sd-diff-bar { display: flex; align-items: center; gap: 6px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  .sd-diff-bar span { width: 10px; height: 10px; border-radius: 50%; background: var(--line-hi); }
+  .sd-diff-bar b { margin-left: 8px; color: var(--muted); font: 600 12.5px/1 ui-monospace, 'SF Mono', Menlo, monospace; }
+  .sd-diff pre { margin: 0; padding: 14px 0 16px; color: var(--muted); font: 500 13.5px/1.7 ui-monospace, 'SF Mono', Menlo, monospace; white-space: pre; overflow-x: auto; display: grid; }
+  .sd-diff pre span { padding: 0 18px; }
+  .sd-del, .sd-add { transition: background .5s, color .5s, opacity .5s; }
+  .sd-add { opacity: 0; }
+  .sd-on .sd-del { background: rgba(229, 72, 77, .14); color: #ff8a8d; text-decoration: line-through; }
+  .sd-on .sd-add { opacity: 1; background: rgba(47, 143, 63, .16); color: var(--node); transition-delay: .5s; }
+  .sd-canvas { width: min(100%, 1120px); }
+
+  /* Lo que rompe el cambio */
+  .sd-demo .sc-row, .sd-demo .sc-node, .sd-demo .sc-line { transition: color .5s 1.1s, border-color .5s 1.1s, stroke .5s 1.1s, box-shadow .5s 1.1s; }
+  .sd-on .sc-row[data-row='getCustomer.id'], .sd-on .sc-row[data-row='openAccount.customerId'] { color: #ff8a8d; }
+  .sd-on .sc-row[data-row='getCustomer.id'] .sc-val { color: #ff8a8d; text-decoration: line-through; }
+  .sd-on .sc-row[data-row='openAccount.customerId'] .sc-pill { color: #ff8a8d; border-color: rgba(229, 72, 77, .6); background: rgba(229, 72, 77, .1); }
+  .sd-on .sc-wire[data-wire='getCustomer.id>openAccount.customerId'] .sc-line { stroke: #e5484d; }
+  .sd-on .sc-node[data-step='openAccount'] { border-color: #e5484d; box-shadow: 0 0 0 calc(var(--u) * 5) rgba(229, 72, 77, .14), 0 calc(var(--u) * 24) calc(var(--u) * 60) rgba(0, 0, 0, .45); }
+  .sd-badge {
+    position: absolute; z-index: 4; transform: translate(-50%, -100%) scale(.9); opacity: 0;
+    padding: calc(var(--u) * 8) calc(var(--u) * 14); border-radius: 999px; white-space: nowrap;
+    background: #2a1214; color: #ffb3b5; border: 1px solid rgba(229, 72, 77, .6); font: 700 calc(var(--u) * 13) / 1 ui-monospace, 'SF Mono', Menlo, monospace;
+    transition: opacity .4s 1.5s, transform .5s cubic-bezier(.3, 1.5, .5, 1) 1.5s;
+  }
+  .sd-on .sd-badge { opacity: 1; transform: translate(-50%, -100%); }
+
+  @media (max-width: 860px) {
+    .sd-points { grid-template-columns: 1fr; gap: 26px; }
+  }
+  @media (max-width: 600px) {
+    .st-standards { padding: 88px 0 80px; }
+    .sd-diff pre { font-size: 12px; }
+  }
+</style>

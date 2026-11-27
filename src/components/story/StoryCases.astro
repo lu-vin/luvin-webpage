@@ -1,0 +1,123 @@
+---
+// Escena 4 de /product: de un workflow salen sus casos. Las tarjetas salen del workflow en abanico,
+// un contador sube y cada caso se marca con el status que espera.
+import { strings, type Lang } from '../../i18n/strings'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const s = strings[lang].pages.story.cases
+const expect: Record<string, string> = { happy: '200 · 200 · 201', input: '400', auth: '401' }
+const code = (name: string, kind: string) => expect[kind] ?? name.match(/(\d{3})/)?.[1] ?? ''
+---
+
+<section class="st-cases">
+  <div class="container">
+    <div class="center narrow reveal">
+      <h2 class="st-big">{s.title}</h2>
+      <p class="st-sub">{s.lead}</p>
+    </div>
+    <div class="cs-stage">
+      <div class="cs-flow" aria-hidden="true">
+        <span>signIn</span><i></i><span>getCustomer</span><i></i><span>openAccount</span>
+      </div>
+      <p class="cs-count"><b data-to={s.items.length}>{s.items.length}</b> {s.counter}</p>
+      <ul class="cs-grid">
+        {
+          s.items.map((c, k) => (
+            <li class={`cs-card cs-${c.kind}`} style={`--k:${k}`}>
+              <span class="cs-kind">{s.kinds[c.kind as keyof typeof s.kinds]}</span>
+              <code class="cs-name">{c.name}</code>
+              <span class="cs-expect">
+                <span class="cs-tick" aria-hidden="true">✓</span>
+                {code(c.name, c.kind)}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="cs-note reveal">{s.note}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Las tarjetas salen del workflow (técnica FLIP) y el contador sube, al entrar en pantalla.
+  const stage = document.querySelector<HTMLElement>('.cs-stage')
+  if (stage && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const origin = stage.querySelector<HTMLElement>('.cs-flow')!
+    const cards = [...stage.querySelectorAll<HTMLElement>('.cs-card')]
+    const count = stage.querySelector<HTMLElement>('.cs-count b')!
+    const total = Number(count.dataset.to)
+    stage.classList.add('cs-ready')
+    count.textContent = '0'
+    const fan = () => {
+      const o = origin.getBoundingClientRect()
+      cards.forEach((c) => {
+        const r = c.getBoundingClientRect()
+        c.style.setProperty('--dx', `${o.left + o.width / 2 - (r.left + r.width / 2)}px`)
+        c.style.setProperty('--dy', `${o.top + o.height / 2 - (r.top + r.height / 2)}px`)
+      })
+      requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.add('cs-out')))
+      let n = 0
+      const tick = setInterval(() => {
+        count.textContent = String(++n)
+        if (n >= total) clearInterval(tick)
+      }, 90)
+    }
+    new IntersectionObserver(
+      (entries, io) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect()
+          fan()
+        }
+      },
+      { threshold: 0.35 },
+    ).observe(stage)
+  }
+</script>
+
+<style is:global>
+  .st-cases { padding: 140px 0 120px; position: relative; }
+  .cs-stage { margin-top: 64px; display: grid; justify-items: center; }
+  .cs-flow { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line-hi); box-shadow: 0 0 60px var(--glow); position: relative; z-index: 2; }
+  .cs-flow span { padding: 6px 10px; border-radius: 8px; background: #0e1712; border: 1px solid var(--line-hi); font: 600 13.5px/1 ui-monospace, 'SF Mono', Menlo, monospace; }
+  .cs-flow i { width: 22px; height: 2px; background: repeating-linear-gradient(90deg, #b58cff 0 5px, transparent 5px 9px); }
+  .cs-count { margin-top: 26px; color: var(--muted); font-size: 18px; }
+  .cs-count b { margin-right: 6px; font-size: clamp(44px, 5vw, 64px); font-weight: 800; letter-spacing: -.04em; color: var(--ink); font-variant-numeric: tabular-nums; vertical-align: -.12em; }
+  .cs-grid { margin-top: 34px; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .cs-card {
+    display: grid; gap: 10px; align-content: start; padding: 18px; border-radius: 18px; background: var(--card); border: 1px solid var(--line);
+    --tone: var(--node);
+  }
+  .cs-input { --tone: #f5b14a; }
+  .cs-auth { --tone: #7fb2ff; }
+  .cs-error { --tone: #ff8a8d; }
+  .cs-kind { justify-self: start; padding: 4px 9px; border-radius: 7px; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent); }
+  .cs-name { font: 600 14px/1.35 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink); overflow-wrap: anywhere; }
+  .cs-expect { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font: 600 13px/1 ui-monospace, 'SF Mono', Menlo, monospace; }
+  .cs-tick { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font: 800 11px/1 Inter, sans-serif; }
+  .cs-note { margin-top: 34px; color: var(--muted); font-size: 17px; text-align: center; max-width: 640px; }
+
+  /* El abanico: cada tarjeta parte desde el workflow y vuelve a su lugar. */
+  .cs-ready .cs-card { transform: translate(var(--dx, 0), var(--dy, 0)) scale(.3); opacity: 0; }
+  .cs-ready .cs-tick { transform: scale(0); }
+  .cs-ready.cs-out .cs-card { transform: none; opacity: 1; transition: transform .9s cubic-bezier(.2, .8, .2, 1) calc(var(--k) * .07s), opacity .5s calc(var(--k) * .07s); }
+  .cs-ready.cs-out .cs-tick { transform: none; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1) calc(1.1s + var(--k) * .12s); }
+
+  @media (max-width: 960px) {
+    .cs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .st-cases { padding: 88px 0 80px; }
+    .cs-grid { gap: 10px; }
+    .cs-card { padding: 13px; gap: 8px; border-radius: 14px; }
+    .cs-kind { font-size: 11px; padding: 3px 7px; }
+    .cs-name { font-size: 12.5px; }
+    .cs-expect { font-size: 12px; }
+    .cs-flow { gap: 6px; padding: 10px; }
+    .cs-flow span { padding: 5px 7px; font-size: 11.5px; }
+    .cs-flow i { width: 10px; }
+  }
+</style>
