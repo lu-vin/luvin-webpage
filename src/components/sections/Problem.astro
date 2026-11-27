@@ -1,4 +1,8 @@
 ---
+// El problema, en dos actos sobre el mismo lienzo: primero alguien copia cada valor a mano, de una
+// respuesta al request siguiente; después Luvin conecta la cadena y los valores viajan solos.
+import SceneCanvas from '../story/SceneCanvas.astro'
+import { layout, outputY, paramY, type Variant } from '../../lib/scene'
 import { strings, type Lang } from '../../i18n/strings'
 
 interface Props {
@@ -6,7 +10,25 @@ interface Props {
 }
 const { lang } = Astro.props
 const t = strings[lang]
-const media = lang === 'en' ? '/media' : '/media/es'
+
+// Cada copia: de qué output sale, a qué parámetro llega y por dónde pasa el portapapeles (en u).
+const moves = (variant: Variant) => {
+  const L = layout(variant)
+  const box = Object.fromEntries(L.boxes.map((b) => [b.id, b]))
+  return L.wires.map((w) => {
+    const [srcId, out] = w.from.split('.')
+    const [dstId] = w.to.split('.')
+    const src = box[srcId]
+    const dst = box[dstId]
+    const i = dst.step.params.findIndex((p) => `${dstId}.${p.name}` === w.to)
+    return {
+      param: w.to,
+      label: out,
+      from: { x: src.x + src.w - 64, y: outputY(src, src.step.outputs.indexOf(out)) },
+      to: { x: dst.x + dst.w - 58, y: paramY(dst, i) },
+    }
+  })
+}
 ---
 
 <!-- El problema -->
@@ -16,8 +38,141 @@ const media = lang === 'en' ? '/media' : '/media/es'
     <h2>{t.problem.title}</h2>
     <p class="body">{t.problem.body}</p>
   </div>
-  <div class="container reveal">
-    <img class="chain" src={`${media}/chain-dark.svg`} alt={t.problem.chainAlt} width="1280" height="430" loading="lazy" />
+  <div class="container pb reveal" data-mode="hand">
+    <div class="pb-bar">
+      <div class="pb-tabs" role="group">
+        <button type="button" class="pb-tab" data-go="hand" aria-pressed="true">{t.problem.hand}</button>
+        <button type="button" class="pb-tab" data-go="luvin" aria-pressed="false">{t.problem.luvin}</button>
+      </div>
+      <p class="pb-count"><b>0</b> {t.problem.copied}</p>
+    </div>
+    <div class="pb-stage">
+      <SceneCanvas lang={lang} id="pb-w" variant="wide" label={t.problem.chainAlt} packets values class="st-only-wide">
+        <span class="pb-clip" data-moves={JSON.stringify(moves('wide'))} aria-hidden="true"></span>
+      </SceneCanvas>
+      <SceneCanvas lang={lang} id="pb-t" variant="tall" label={t.problem.chainAlt} packets values class="st-only-tall">
+        <span class="pb-clip" data-moves={JSON.stringify(moves('tall'))} aria-hidden="true"></span>
+      </SceneCanvas>
+    </div>
+    <p class="pb-every">{t.problem.every}</p>
     <p class="answer">{t.problem.answer}</p>
   </div>
 </section>
+
+<script>
+  type Move = { param: string; label: string; from: { x: number; y: number }; to: { x: number; y: number } }
+  const root = document.querySelector<HTMLElement>('.pb')
+  if (root) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, reduced ? 80 : ms))
+    const count = root.querySelector<HTMLElement>('.pb-count b')!
+    let token = 0 // cada animación nueva cancela la anterior
+
+    const visible = () => [...root.querySelectorAll<HTMLElement>('.sc')].find((sc) => sc.offsetParent !== null)!
+    const place = (el: HTMLElement, p: { x: number; y: number }) => {
+      el.style.left = `calc(var(--u) * ${p.x})`
+      el.style.top = `calc(var(--u) * ${p.y})`
+    }
+    function setMode(mode: 'hand' | 'luvin') {
+      root!.dataset.mode = mode
+      root!.querySelectorAll<HTMLButtonElement>('.pb-tab').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.go === mode)))
+    }
+
+    async function playHand() {
+      const my = ++token
+      setMode('hand')
+      root!.classList.remove('pb-said')
+      root!.querySelectorAll('.sc-pill').forEach((p) => p.classList.remove('pb-pasted'))
+      count.textContent = '0'
+      const sc = visible()
+      const clip = sc.querySelector<HTMLElement>('.pb-clip')!
+      const moves: Move[] = JSON.parse(clip.dataset.moves!)
+      await sleep(500)
+      for (const [n, m] of moves.entries()) {
+        if (my !== token) return
+        clip.classList.remove('pb-move', 'pb-on')
+        place(clip, m.from)
+        clip.textContent = `⌘C  ${m.label}`
+        void clip.offsetWidth
+        clip.classList.add('pb-on')
+        await sleep(650)
+        if (my !== token) return
+        clip.classList.add('pb-move')
+        place(clip, m.to)
+        await sleep(900)
+        if (my !== token) return
+        clip.textContent = `⌘V  ${m.label}`
+        sc.querySelectorAll(`.sc-pill[data-param="${m.param}"]`).forEach((p) => p.classList.add('pb-pasted'))
+        count.textContent = String(n + 1)
+        await sleep(450)
+      }
+      clip.classList.remove('pb-on')
+      root!.classList.add('pb-said')
+      await sleep(2200)
+      if (my === token) playLuvin()
+    }
+    async function playLuvin() {
+      const my = ++token
+      setMode('luvin')
+      // El contador baja a cero.
+      for (let n = Number(count.textContent); n >= 0; n--) {
+        if (my !== token) return
+        count.textContent = String(n)
+        await sleep(110)
+      }
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('.pb-tab').forEach((b) =>
+      b.addEventListener('click', () => (b.dataset.go === 'hand' ? playHand() : playLuvin())),
+    )
+    new IntersectionObserver(
+      (entries, io) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect()
+          playHand()
+        }
+      },
+      { threshold: 0.4 },
+    ).observe(root.querySelector('.pb-stage')!)
+  }
+</script>
+
+<style is:global>
+  .pb { margin-top: 56px; }
+  .pb-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; max-width: 1120px; margin: 0 auto 22px; }
+  .pb-tabs { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--card); border: 1px solid var(--line-hi); }
+  .pb-tab { min-height: 40px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 15px/1 inherit; font-family: inherit; cursor: pointer; transition: background .25s, color .25s; }
+  .pb-tab[aria-pressed='true'] { background: var(--card-hi); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-hi); }
+  .pb[data-mode='luvin'] .pb-tab[aria-pressed='true'] { background: var(--brand); color: #fff; box-shadow: none; }
+  .pb-count { color: var(--muted); font-size: 16px; }
+  .pb-count b { display: inline-block; min-width: 1ch; margin-right: 4px; font-size: 40px; font-weight: 800; letter-spacing: -.03em; color: #ff8a8d; vertical-align: -6px; font-variant-numeric: tabular-nums; transition: color .3s; }
+  .pb[data-mode='luvin'] .pb-count b { color: var(--node); }
+  .pb-stage { max-width: 1120px; margin-inline: auto; }
+
+  /* A mano: sin líneas ni valores viajando; los parámetros se llenan al pegar. */
+  .pb .sc-line, .pb .sc-packets, .pb .sc-pill { transition: opacity .5s; }
+  .pb[data-mode='hand'] .sc-line, .pb[data-mode='hand'] .sc-packets { opacity: 0; }
+  .pb[data-mode='hand'] .sc-pill:not(.sc-input) { opacity: 0; transform: scale(.85); }
+  .pb[data-mode='hand'] .sc-pill.pb-pasted { opacity: 1; transform: none; color: var(--muted); background: rgba(255, 255, 255, .04); border: 1px dashed #73847a; }
+  .pb[data-mode='hand'] .sc-param::before, .pb[data-mode='hand'] .sc-out::after { background: #2f4237; }
+  .pb[data-mode='luvin'] .sc-draw { animation: st-draw 1.1s cubic-bezier(.45, 0, .2, 1) both; animation-delay: calc(var(--k) * .14s); }
+
+  .pb-clip {
+    position: absolute; z-index: 4; transform: translate(-50%, -50%) scale(.6); opacity: 0;
+    padding: calc(var(--u) * 6) calc(var(--u) * 12); border-radius: calc(var(--u) * 8);
+    background: #f3f5f2; color: #0a110d; font: 700 calc(var(--u) * 13) / 1 ui-monospace, 'SF Mono', Menlo, monospace; white-space: pre;
+    box-shadow: 0 calc(var(--u) * 12) calc(var(--u) * 30) rgba(0, 0, 0, .5); pointer-events: none;
+    transition: opacity .25s, transform .25s;
+  }
+  .pb-clip.pb-on { opacity: 1; transform: translate(-50%, -50%); }
+  .pb-clip.pb-move { transition: left .9s cubic-bezier(.45, 0, .2, 1), top .9s cubic-bezier(.45, 0, .2, 1), opacity .25s, transform .25s; }
+  .pb[data-mode='luvin'] .pb-clip { opacity: 0; }
+
+  .pb-every { margin-top: 26px; text-align: center; color: #ff8a8d; font-weight: 600; opacity: 0; transition: opacity .5s; }
+  .pb[data-mode='hand'].pb-said .pb-every { opacity: 1; }
+  .pb .answer { opacity: .35; transition: opacity .6s; }
+  .pb[data-mode='luvin'] .answer { opacity: 1; }
+  @media (max-width: 600px) {
+    .pb-count b { font-size: 32px; }
+  }
+</style>

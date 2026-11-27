@@ -1,4 +1,6 @@
 ---
+// Cómo funciona: cuatro tarjetas grandes, cada una con su paso dibujado (no una captura). Cada
+// dibujo se anima al entrar en pantalla (la clase .in de .reveal, en Base.astro).
 import { strings, type Lang } from '../../i18n/strings'
 
 interface Props {
@@ -6,6 +8,25 @@ interface Props {
 }
 const { lang } = Astro.props
 const t = strings[lang]
+const files = [
+  { name: 'bank.openapi.yaml', tag: 'OpenAPI' },
+  { name: 'events.asyncapi.yaml', tag: 'AsyncAPI' },
+  { name: 'store.postman_collection.json', tag: 'Postman' },
+]
+const yaml = [
+  ['- stepId: getCustomer', false],
+  ['  operationId: getCustomer', false],
+  ['  parameters:', false],
+  ['    - name: Authorization', false],
+  ['      in: header', false],
+  ['      value: Bearer {$steps.signIn.outputs.token}', true],
+] as const
+const cases = [
+  { name: lang === 'en' ? 'Happy path' : 'Camino feliz', ok: true },
+  { name: lang === 'en' ? 'Missing email' : 'Sin email', ok: true },
+  { name: lang === 'en' ? 'No credentials' : 'Sin credenciales', ok: true },
+  { name: lang === 'en' ? 'Inactive customer' : 'Cliente inactivo', ok: false },
+]
 ---
 
 <!-- Cómo funciona -->
@@ -15,16 +36,133 @@ const t = strings[lang]
       <p class="kicker">{t.how.kicker}</p>
       <h2>{t.how.title}</h2>
     </div>
-    <ol class="steps reveal">
+    <ol class="how-grid">
       {
         t.how.steps.map((s, i) => (
-          <li class="step">
-            <span class="step-num">{i + 1}</span>
+          <li class={`how-tile how-${i} reveal`}>
+            <span class="how-n">{i + 1}</span>
             <h3>{s.title}</h3>
             <p>{s.body}</p>
+            <div class="how-art" aria-hidden="true">
+              {i === 0 && (
+                <div class="how-files">
+                  {files.map((f, k) => (
+                    <div class="how-file" style={`--k:${k}`}>
+                      <span class="how-file-ico" />
+                      <code>{f.name}</code>
+                      <span class="how-file-tag">{f.tag}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {i === 1 && (
+                <svg class="how-canvas" viewBox="0 0 360 150">
+                  <path class="how-wire" d="M112 52 C142 52 142 98 172 98" pathLength="1" />
+                  <path class="how-wire" d="M286 98 C300 98 300 58 314 58" pathLength="1" style="--k:1" />
+                  {[
+                    { x: 8, y: 22, n: '1', t: 'signIn' },
+                    { x: 172, y: 68, n: '2', t: 'getCustomer' },
+                    { x: 314, y: 28, n: '3', t: 'openAccount' },
+                  ].map((b) => (
+                    <g>
+                      <rect class="how-node" x={b.x} y={b.y} width="114" height="60" rx="10" />
+                      <circle class="how-node-n" cx={b.x + 18} cy={b.y + 18} r="9" />
+                      <text class="how-node-n-t" x={b.x + 18} y={b.y + 22}>{b.n}</text>
+                      <text class="how-node-t" x={b.x + 33} y={b.y + 23}>{b.t}</text>
+                      <rect class="how-node-row" x={b.x + 10} y={b.y + 36} width="94" height="12" rx="3" />
+                    </g>
+                  ))}
+                  <circle class="how-port" cx="112" cy="52" r="4" />
+                  <circle class="how-port" cx="172" cy="98" r="4" />
+                  <circle class="how-dot" r="5">
+                    <animateMotion dur="2.4s" repeatCount="indefinite" path="M112 52 C142 52 142 98 172 98" />
+                  </circle>
+                </svg>
+              )}
+              {i === 2 && (
+                <pre class="how-yaml">
+                  {yaml.map(([l, hl]) => (
+                    <span class={hl ? 'how-hl' : undefined}>{l}</span>
+                  ))}
+                </pre>
+              )}
+              {i === 3 && (
+                <ul class="how-cases">
+                  {cases.map((c, k) => (
+                    <li class={c.ok ? 'ok' : 'bad'} style={`--k:${k}`}>
+                      <span class="how-check">{c.ok ? '✓' : '✕'}</span>
+                      {c.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </li>
         ))
       }
     </ol>
   </div>
 </section>
+
+<style is:global>
+  .how-grid { margin-top: 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .how-tile {
+    position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 420px; padding: 34px 34px 0;
+    border-radius: 26px; border: 1px solid var(--line); background: radial-gradient(600px 300px at 0% 0%, rgba(47, 143, 63, .12), transparent 70%), var(--card);
+  }
+  .how-tile:nth-child(2n) { transition-delay: .08s; }
+  .how-n { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 800; box-shadow: 0 0 24px rgba(47, 143, 63, .45); }
+  .how-tile h3 { margin-top: 20px; font-size: clamp(24px, 2.4vw, 30px); font-weight: 800; letter-spacing: -.02em; }
+  .how-tile p { margin-top: 10px; color: var(--muted); font-size: 17px; max-width: 460px; }
+  .how-art { margin-top: auto; padding: 32px 0 34px; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
+
+  /* 1. Los contratos, apilados */
+  .how-files { width: min(100%, 420px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .how-file {
+    display: flex; align-items: center; gap: 12px; min-width: 0; padding: 14px 16px; border-radius: 14px; background: #0e1712; border: 1px solid var(--line-hi);
+    font-size: 14px; transition: opacity .6s calc(.2s + var(--k) * .14s), transform .7s cubic-bezier(.2, .7, .2, 1) calc(.2s + var(--k) * .14s);
+  }
+  .how-file code { min-width: 0; font: 600 13.5px/1.2 ui-monospace, 'SF Mono', Menlo, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .how-file-ico { flex: none; width: 22px; height: 28px; border-radius: 4px; background: linear-gradient(180deg, #2f4237, #1c2a22); box-shadow: inset 0 0 0 1px #3b5245; }
+  .how-file-tag { margin-left: auto; padding: 3px 8px; border-radius: 6px; color: var(--node); background: rgba(111, 207, 127, .1); font-size: 12px; font-weight: 700; }
+  .js .how-tile:not(.in) .how-file { opacity: 0; transform: translateX(-24px); }
+
+  /* 2. El lienzo */
+  .how-canvas { width: min(100%, 440px); overflow: visible; }
+  .how-node { fill: #0e1712; stroke: #2f4237; stroke-width: 1.2; }
+  .how-node-n { fill: var(--brand); }
+  .how-node-n-t { fill: #fff; font: 800 10px Inter, sans-serif; text-anchor: middle; }
+  .how-node-t { fill: var(--ink); font: 700 12px Inter, sans-serif; }
+  .how-node-row { fill: #1a261f; }
+  .how-port { fill: #b58cff; }
+  .how-wire { fill: none; stroke: #b58cff; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 1s cubic-bezier(.45, 0, .2, 1) calc(.5s + var(--k, 0) * .3s); }
+  .js .how-tile:not(.in) .how-wire { stroke-dashoffset: 1; }
+  .how-dot { fill: #b58cff; filter: drop-shadow(0 0 6px #b58cff); transition: opacity .4s 1.4s; }
+  .js .how-tile:not(.in) .how-dot { opacity: 0; }
+
+  /* 3. El Arazzo */
+  .how-yaml { width: min(100%, 470px); margin: 0; padding: 18px 20px; border-radius: 14px; background: #0b120e; border: 1px solid var(--line-hi); color: var(--muted); font: 500 13px/1.75 ui-monospace, 'SF Mono', Menlo, monospace; white-space: pre; overflow: hidden; display: grid; }
+  .how-yaml span { display: block; }
+  .how-hl { color: #e9dcff; background: linear-gradient(90deg, rgba(181, 140, 255, .22), rgba(181, 140, 255, .06)); margin: 0 -20px; padding: 0 20px; background-size: 100% 100%; background-repeat: no-repeat; transition: background-size .9s cubic-bezier(.45, 0, .2, 1) .5s; }
+  .js .how-tile:not(.in) .how-hl { background-size: 0 100%; }
+
+  /* 4. Los casos */
+  .how-cases { width: min(100%, 380px); display: grid; gap: 10px; }
+  .how-cases li { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: #0e1712; border: 1px solid var(--line-hi); font-weight: 600; font-size: 15px; }
+  .how-check { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 13px; font-weight: 800; transition: background .3s calc(.4s + var(--k) * .35s), color .3s calc(.4s + var(--k) * .35s); }
+  .how-cases .ok .how-check { background: var(--brand); color: #fff; }
+  .how-cases .bad .how-check { background: #e5484d; color: #fff; }
+  .js .how-tile:not(.in) .how-cases .how-check { background: var(--line-hi); color: transparent; }
+  .how-cases li { transition: border-color .3s calc(.4s + var(--k) * .35s); }
+  .how-cases .bad { border-color: rgba(229, 72, 77, .6); }
+  .js .how-tile:not(.in) .how-cases .bad { border-color: var(--line-hi); }
+
+  @media (max-width: 860px) {
+    .how-grid { grid-template-columns: 1fr; }
+    .how-tile { min-height: 0; padding: 26px 22px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .how-file, .how-wire, .how-dot, .how-hl, .how-check, .how-cases li { transition: none; }
+    .how-dot { display: none; }
+  }
+</style>
